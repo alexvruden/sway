@@ -1,0 +1,181 @@
+# config for sway
+#
+# Logo key. Use Mod1 for Alt.
+set $mod Mod4
+# Home row direction keys, like vim
+set $left h
+set $down j
+set $up k
+set $right l
+
+set $wsp1 "1: TTY"
+set $wsp2 "2: INTERNET"
+set $wsp3 "3: MUSIC"
+set $wsp4 "4: VIDEO"
+set $wsp5 "5: GAMES"
+set $wsp6 "6: "
+set $wsp7 "7: LOG"
+set $wsp8 "8: COMMANDER"
+set $wsp9 "9: TORRENT"
+set $wsp10 "10: CPU"
+
+seat seat0 {
+
+	xcursor_theme gentoo 24
+	#hide_cursor 1000
+}
+set $term foot
+#set $menu dmenu_path | dmenu | xargs swaymsg exec --
+### Output configuration
+
+font pango:monospace 10
+
+output HDMI-A-1 resolution 2560x1440 position 2560,0
+output * bg ${HOME}/.config/sway/sway.png fill
+exec swayidle -w timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"'
+input "10077:2982:USB_OPTICAL_MOUSE" {
+	drag enabled
+	accel_profile "flat"    
+	pointer_accel -0.1
+	scroll_factor 0.5
+}
+
+input "49396:1216:SZH_usb_keyboard" {
+	xkb_layout "ru,us"
+	xkb_options "grp:alt_shift_toggle"
+	xkb_switch_layout next
+#	xkb_capslock disabled
+	xkb_numlock enabled
+	#repeat_delay 3000
+	#repeat_rate 5
+}
+
+    floating_modifier $mod normal
+
+bindsym {
+
+    Print exec grim
+    $mod+Return exec $term
+    $mod+Shift+q kill
+    $mod+d exec $menu
+    $mod+Shift+c reload
+    $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
+
+    $mod+$left focus left
+    $mod+$down focus down
+    $mod+$up focus up
+    $mod+$right focus right
+
+    $mod+Left focus left
+    $mod+Down focus down
+    $mod+Up focus up
+    $mod+Right focus right
+
+    $mod+Shift+$left move left
+    $mod+Shift+$down move down
+    $mod+Shift+$up move up
+    $mod+Shift+$right move right
+
+    $mod+Shift+Left move left
+    $mod+Shift+Down move down
+    $mod+Shift+Up move up
+    $mod+Shift+Right move right
+
+    $mod+1 workspace $wsp1
+    $mod+2 workspace $wsp2
+    $mod+3 workspace $wsp3
+    $mod+4 workspace $wsp4
+    $mod+5 workspace $wsp5
+    $mod+6 workspace $wsp6
+    $mod+7 workspace $wsp7
+    $mod+8 workspace $wsp8
+    $mod+9 workspace $wsp9
+    $mod+0 workspace $wsp10
+
+    $mod+Shift+1 move container to workspace $wsp1
+    $mod+Shift+2 move container to workspace $wsp2
+    $mod+Shift+3 move container to workspace $wsp3
+    $mod+Shift+4 move container to workspace $wsp4
+    $mod+Shift+5 move container to workspace $wsp5
+    $mod+Shift+6 move container to workspace $wsp6
+    $mod+Shift+7 move container to workspace $wsp7
+    $mod+Shift+8 move container to workspace $wsp8
+    $mod+Shift+9 move container to workspace $wsp9
+    $mod+Shift+0 move container to workspace $wsp10
+
+    $mod+b splith
+    $mod+v splitv
+
+    $mod+s layout stacking
+    $mod+w layout tabbed
+    $mod+e layout toggle split
+
+    $mod+f fullscreen
+
+    $mod+Shift+space floating toggle
+
+    $mod+space focus mode_toggle
+
+    $mod+a focus parent
+}
+
+bindsym --border button3 floating toggle
+bindsym --border control+button3 kill
+bindsym --whole-window $mod+button5 focus next
+bindsym --whole-window $mod+button4 focus prev
+
+mode "resize" {
+    bindsym $left resize shrink width 10px
+    bindsym $down resize grow height 10px
+    bindsym $up resize shrink height 10px
+    bindsym $right resize grow width 10px
+
+    bindsym Left resize shrink width 10px
+    bindsym Down resize grow height 10px
+    bindsym Up resize shrink height 10px
+    bindsym Right resize grow width 10px
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
+
+for_window [title="."] title_format " %title : %app_id"
+
+for_window [app_id = "floating"] floating enable
+for_window [app_id = "floating_update"] floating enable, resize set width 1000px height 600px
+
+for_window [title = "0x55bf2*"] floating enable
+for_window [title = "Administrator privileges required"] floating enable
+
+for_window [app_id = "foot"] floating enable
+
+for_window [app_id="firefox" title="Library"] floating enable, border pixel 3, sticky enable
+
+#for_window [app_id="foot"] move container to workspace $wsp1; focus
+
+for_window [app_id="firefox"] move container to workspace $wsp2; focus; floating enable
+
+for_window [app_id="rtorrent"] move container to workspace $wsp2; focus
+for_window [app_id="internet"] move container to workspace $wsp2; focus
+
+for_window [app_id="music"] move container to workspace $wsp3; focus
+
+for_window [app_id="mpv"] move container to workspace $wsp4; focus; floating enable
+for_window [app_id="video"] move container to workspace $wsp4; focus
+
+for_window [app_id="Waydroid"] move container to workspace $wsp5; focus
+for_window [app_id="games"] move container to workspace $wsp5; focus
+
+for_window [app_id="log"] move container to workspace $wsp7; focus; floating enable
+
+for_window [app_id="commander"] move container to workspace $wsp8; focus; floating enable, resize set width 2000px height 1000px
+
+for_window [app_id="torrent"] move container to workspace $wsp9; focus
+
+for_window [app_id="cpu"] move to workspace $wsp10; focus
+
+bindsym control+shift+escape exec $term -a 'cpu' htop
+
+include ${HOME}/.config/sway/config.d/*
+
