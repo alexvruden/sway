@@ -1,0 +1,69 @@
+bg_bar_color="#282A36"
+
+separator() {
+  echo -n "{"
+  echo -n "\"full_text\":\"|\","
+  echo -n "\"separator\":false,"
+  echo -n "\"separator_block_width\":0,"
+  echo -n "\"border\":\"$bg_bar_color\","
+  echo -n "\"border_left\":0,"
+  echo -n "\"border_right\":0,"
+  echo -n "\"border_top\":2,"
+  echo -n "\"border_bottom\":2,"
+  echo -n "\"color\":\"$1\","
+  echo -n "\"background\":\"$2\""
+  echo -n "}"
+}
+
+
+
+common() {
+  echo -n "\"border\": \"$bg_bar_color\","
+  echo -n "\"separator\":false,"
+  echo -n "\"separator_block_width\":0,"
+  echo -n "\"border_top\":2,"
+  echo -n "\"border_bottom\":2,"
+  echo -n "\"border_left\":0,"
+  echo -n "\"border_right\":0"
+}
+
+color_folder() {
+  echo -n "\"color\":\"#7393B3\","
+  echo -n "\"urgent\":false,"
+}
+
+color_bin() {
+  echo -n "\"color\":\"#088F8F\","
+}
+
+color_log() {
+  echo -n "\"color\":\"#E4D00A\","
+}
+
+color_cfg() {
+  echo -n "\"color\":\"#FF00FF\","
+}
+
+color_red() {
+  echo -n "\"color\":\"#FF0000\","
+}
+
+comma() {
+ echo -n ","
+}
+
+header_json() {
+ echo '{"version": 1,"click_events": true}'
+ echo '['
+ echo '[]'
+}
+
+body_json_begin() {
+ echo -n ",["
+}
+
+body_json_end() {
+ echo "]"
+}
+
+

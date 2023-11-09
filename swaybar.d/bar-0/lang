@@ -1,0 +1,16 @@
+lang(){
+  echo -n "{"
+  echo -n "\"name\":\"id_lang\""
+  comma
+  ilang=$(swaymsg -p -t get_inputs | tail -n 32 | grep -m 1 'Active Keyboard Layout' | awk '{print $4}')
+  if [ ${ilang} == "Russian" ] ; then
+    echo -n "\"full_text\":\"  RU \""
+  else
+    echo -n "\"full_text\":\"  US \""
+  fi
+  comma
+  echo -n '"align": "center"'
+  echo -n "}"
+}
+
+

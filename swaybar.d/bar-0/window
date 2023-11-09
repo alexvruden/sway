@@ -1,0 +1,9 @@
+window() {
+  echo -n "{"
+  echo -n "\"name\":\"id_window\""
+  comma
+  echo -n "\"full_text\":\"  \""
+  comma
+  echo -n '"align": "center"'
+  echo -n "}"
+}

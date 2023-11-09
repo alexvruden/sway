@@ -1,0 +1,112 @@
+
+prev_rx=0
+prev_tx=0
+
+
+blk_rx() {
+  echo -n "{"
+  echo -n "\"separator\": false,"
+  echo -n "\"full_text\":\" RX:\""
+  echo -n "}"
+
+}
+
+blk_tx() {
+  echo -n "{"
+  echo -n "\"separator\": false,"
+  echo -n "\"full_text\":\" TX:\""
+  echo -n "}"
+
+}
+
+blk_middle() {
+  echo -n "{"
+  echo -n "\"separator\": false,"
+  if [ `cat /tmp/icmp` == on ]; then
+    color_bin
+  else
+    color_red
+  fi
+  echo -n "\"full_text\":\"\""
+  echo -n "}"
+
+}
+
+blk_rx_speed() {
+  echo -n "{"
+  echo -n "\"separator\": false,"
+  echo -n "\"min_width\": 100,"
+  echo -n "\"align\": \"right\","
+  echo -n "\"full_text\":\"$speed_rx KiB \""
+  echo -n "}"
+}
+
+blk_tx_speed() {
+  echo -n "{"
+  echo -n "\"min_width\": 100,"
+  echo -n "\"align\": \"right\","
+  #echo -n "\"separator\": false,"
+  echo -n "\"full_text\":\"$speed_tx KiB \""
+  echo -n "}"
+}
+
+
+inet_speed() {
+
+  ifconfig tun0 2>/dev/null 1>&2
+  if [ $? -eq 0 ]; then
+    curr_rx=$(cat /proc/net/dev | awk '/tun0/ {print $2}')
+    curr_tx=$(cat /proc/net/dev | awk '/tun0/ {print $10}')
+  else
+    curr_rx=$(cat /proc/net/dev | awk '/enp4s0/ {print $2}')
+    curr_tx=$(cat /proc/net/dev | awk '/enp4s0/ {print $10}')
+  fi
+
+  speed_rx=$(($curr_rx/1024-$prev_rx/1024))
+  speed_tx=$(($curr_tx/1024-$prev_tx/1024))
+
+#  echo -n "{"
+#  echo -n "\"name\":\"id_inet_speed\""
+#  comma
+#  if (($speed_rx < 10)); then
+#    f_rx="    $speed_rx"
+#  elif (($speed_rx < 100)); then
+#    f_rx="   $speed_rx"
+#  elif (($speed_rx < 1000)); then
+#    f_rx="  $speed_rx"
+#  elif (($speed_rx < 10000)); then
+#    f_rx=" $speed_rx"
+#  elif (($speed_rx < 100000)); then
+#    f_rx="$speed_rx"
+#  fi
+
+#  if (($speed_tx < 10)); then
+#    f_tx="    $speed_tx"
+#  elif (($speed_tx < 100)); then
+#    f_tx="   $speed_tx"
+#  elif (($speed_tx < 1000)); then
+#    f_tx="  $speed_tx"
+#  elif (($speed_tx < 10000)); then
+#    f_tx=" $speed_tx"
+#  elif (($speed_tx < 100000)); then
+#    f_tx="$speed_tx"
+#  fi
+
+#  echo -n "\"full_text\":\" RX:$f_rx KiB  TX:$f_tx KiB \""
+#----
+  blk_rx
+  comma
+  blk_rx_speed
+  comma
+  blk_middle
+  comma
+  blk_tx
+  comma
+  blk_tx_speed
+#----
+#  echo -n "}"
+
+  prev_rx=$curr_rx
+  prev_tx=$curr_tx
+}
+

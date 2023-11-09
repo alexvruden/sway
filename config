@@ -177,5 +177,5 @@ for_window [app_id="cpu"] move to workspace $wsp10; focus
 
 bindsym control+shift+escape exec $term -a 'cpu' htop
 
-include ${HOME}/.config/sway/config.d/*
+include /tmp/swaybar/config.d/*
 
