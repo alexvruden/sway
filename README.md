@@ -20,3 +20,4 @@ sway --unsupported-gpu 2>/tmp/sway.log 1>&2
 clear
 exit
 </code>
+![Custom Swaybar](https://github.com/alexvruden/sway/blob/main/image1.png?raw=true)
