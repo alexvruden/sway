@@ -20,4 +20,9 @@ sway --unsupported-gpu 2>/tmp/sway.log 1>&2
 clear
 exit
 </code>
+<br>
+<br>
+<b>Custom Swaybar. Manage bar without reload sway config. </b>
+<br>
+
 ![Custom Swaybar](https://github.com/alexvruden/sway/blob/main/image1.png?raw=true)
