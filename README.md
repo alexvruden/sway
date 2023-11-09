@@ -3,7 +3,7 @@ My sway config
 <br><br>
 <b>/etc/fstab</b>
 <br>
-<code>tmpfs                   /tmp            tmpfs           rw,nosuid,noatime,nodev,size=40G,mode=1777 0 0</code>
+<code>tmpfs /tmp tmpfs rw,nosuid,noatime,nodev,size=40G,mode=1777 0 0</code>
 <br>
 <br>
 <b>~/.bash_login</b>
