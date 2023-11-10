@@ -2,58 +2,12 @@
 
 set -a
 
-#mkdir -p /tmp/swaybar
-#rm -rf /tmp/swaybar/bar-$1
-#mkdir -p /tmp/swaybar/bar-$1
-
 idb=$1
 
-#echo "$(echo "$2" | cut -d: -f1)" > /tmp/swaybar/bar-$idb/icon
-#echo "$(echo "$2" | cut -d: -f2)" > /tmp/swaybar/bar-$idb/icon-text-color
-
-#echo "" > /tmp/swaybar/bar-$idb/icon
-#echo "#FFFFFF" > /tmp/swaybar/bar-$idb/icon-color
-#echo "#323232" > /tmp/swaybar/bar-$idb/icon-background-color
-
-#echo "$(echo "$3" | cut -d: -f1)" > /tmp/swaybar/bar-$idb/full-text
-#echo "$(echo "$3" | cut -d: -f2)" > /tmp/swaybar/bar-$idb/full-text-color
-#echo "" > /tmp/swaybar/bar-$idb/full-text
-#echo "#FFFFFF" > /tmp/swaybar/bar-$idb/full-text-color
-#echo "#323232" > /tmp/swaybar/bar-$idb/full-text-background-color
-
-#SWB_ICON_WIDTH=$(echo "$4" | cut -d: -f1)
-#SWB_TEXT_WIDTH=$(echo "$4" | cut -d: -f2)
 SWB_ICON_WIDTH=40
 SWB_TEXT_WIDTH=150
 
-#events_shell=$5
-
-#if [ "$(echo "$events_shell" | cut -d: -f1)" != "" ]; then
-#    echo "$(echo "$events_shell" | cut -d: -f1)" > /tmp/swaybar/bar-$idb/event-272
-#else
-#    rm -f /tmp/swaybar/bar-$idb/event-272
-#fi
-#if [ "$(echo "$events_shell" | cut -d: -f2)" != "" ]; then
-#    echo "$(echo "$events_shell" | cut -d: -f2)" > /tmp/swaybar/bar-$idb/event-273
-#else
-#    rm -f /tmp/swaybar/bar-$idb/event-273
-#fi
-#if [ "$(echo "$events_shell" | cut -d: -f3)" != "" ]; then
-#    echo "$(echo "$events_shell" | cut -d: -f3)" > /tmp/swaybar/bar-$idb/event-768
-#else
-#    rm -f /tmp/swaybar/bar-$idb/event-768
-#fi
-#if [ "$(echo "$events_shell" | cut -d: -f4)" != "" ]; then
-#    echo "$(echo "$events_shell" | cut -d: -f4)" > /tmp/swaybar/bar-$idb/event-769
-#else
-#    rm -f /tmp/swaybar/bar-$idb/event-769
-#fi
-
-#if [ -e /tmp/swaybar/bar-$idb/event-272 ] || [ -e /tmp/swaybar/bar-$idb/event-273 ] || [ -e /tmp/swaybar/bar-$idb/event-768 ] || [ -e /tmp/swaybar/bar-$idb/event-769 ]; then
-    echo '{"version": 1,"click_events": true}'
-#else
-#    echo '{"version": 1,"click_events": false}'
-#fi
+echo '{"version": 1,"click_events": true}'
 
 echo '['
 echo '[]'

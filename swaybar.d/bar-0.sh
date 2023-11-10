@@ -1,8 +1,6 @@
 #!/bin/bash
 
 mkdir -p /tmp/swaybar
-#cp ${HOME}/.config/sway/swaybar.d/idb /tmp/swaybar
-#
 
 sway_bar_dir="${HOME}/.config/sway/swaybar.d/bar-0"
 
@@ -57,10 +55,6 @@ read -t 1 line
 case  $line  in
 
  *"id_cpu"*"event"*"272"*) swaymsg -q exec 'foot -a "cpu" htop' & ;; #BTN_LEFT (272) pressed
-# *"id_sway_config"*"event"*"272"*) swaymsg -q exec 'foot nano ${HOME}/.config/sway/config' & ;;
-# *"id_log_system"*"event"*"272"*) swaymsg -q exec 'foot -T "syslog" -a "logs" sudo tail -n 20 -f /var/log/messages' & ;;
-# *"id_log_openvpn"*"event"*"272"*) swaymsg -q exec 'foot -T "openvpn" -a "logs" tail -n 20 -f /var/log/openvpn-client.log' & ;;
-# *"id_bash"*"event"*"272"*) swaymsg -q exec 'foot -a "free-float"' & ;;
 
  *"id_window"*"event"*"272"*) for (( i=1;i<=$(cat /tmp/swaybar/idb);i++ )); do swaymsg -q bar $i hidden_state show; done & ;;
  *"id_window"*"event"*"273"*) for (( i=1;i<=$(cat /tmp/swaybar/idb);i++ )); do swaymsg -q bar $i hidden_state hide; done & ;;
