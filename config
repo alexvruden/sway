@@ -1,3 +1,4 @@
+
 # config for sway
 #
 # Logo key. Use Mod1 for Alt.
@@ -61,6 +62,9 @@ bindsym {
     $mod+Shift+c reload
     $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
 
+    $mod+Shift+minus move scratchpad
+    $mod+minus scratchpad show
+
     $mod+$left focus left
     $mod+$down focus down
     $mod+$up focus up
@@ -117,6 +121,7 @@ bindsym {
     $mod+space focus mode_toggle
 
     $mod+a focus parent
+    $mod+backspace kill
 }
 
 bindsym --border button3 floating toggle

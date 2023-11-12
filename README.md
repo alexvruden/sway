@@ -25,4 +25,4 @@ exit
 <b>Custom Swaybar. Manage bar without reload sway config. </b>
 <br>
 
-![Custom Swaybar](https://github.com/alexvruden/sway/blob/main/image1.png?raw=true)
+#![Custom Swaybar](https://github.com/alexvruden/sway/blob/main/image1.png?raw=true)

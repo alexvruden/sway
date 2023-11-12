@@ -39,8 +39,13 @@ for (( i=1;i<=$(cat /tmp/swaybar/idb_max);i++ )); do
  mkdir -p /tmp/swaybar/bar-$i
 done
 
+if [ -e ~/.config/sway/swaybar.d/store/idb ]; then
+ ~/.config/sway/swaybar.d/manage_bar.sh -r
+ exit 1
+fi
+
 i=1
-echo " -= Internet =-" > /tmp/swaybar/bar-$i/full-text
+echo "-= Internet =-" > /tmp/swaybar/bar-$i/full-text
 echo "#088F8F" > /tmp/swaybar/bar-$i/full-text-color
 #echo "" > /tmp/swaybar/bar-$i/icon
 #echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
@@ -62,7 +67,7 @@ echo "transmission-daemon" > /tmp/swaybar/bar-$i/event-272
 echo "pkill transmission-daemon" > /tmp/swaybar/bar-$i/event-273
 
 ((i++))
-echo " -= Tools =-" > /tmp/swaybar/bar-$i/full-text
+echo "-= Tools =-" > /tmp/swaybar/bar-$i/full-text
 echo "#088F8F" > /tmp/swaybar/bar-$i/full-text-color
 #echo "" > /tmp/swaybar/bar-$i/icon
 #echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
@@ -83,7 +88,7 @@ echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
 echo "foot" > /tmp/swaybar/bar-$i/event-272
 
 ((i++))
-echo " -= Logs =-" > /tmp/swaybar/bar-$i/full-text
+echo "-= Logs =-" > /tmp/swaybar/bar-$i/full-text
 echo "#088F8F" > /tmp/swaybar/bar-$i/full-text-color
 #echo "" > /tmp/swaybar/bar-$i/icon
 #echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
@@ -104,7 +109,7 @@ echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
 echo "foot -a 'log' tail -f /var/log/openvpn-client.log" > /tmp/swaybar/bar-$i/event-272
 
 ((i++))
-echo " -= System =-" > /tmp/swaybar/bar-$i/full-text
+echo "-= System =-" > /tmp/swaybar/bar-$i/full-text
 echo "#088F8F" > /tmp/swaybar/bar-$i/full-text-color
 #echo "i" > /tmp/swaybar/bar-$i/icon
 #echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
@@ -132,7 +137,7 @@ echo "#FF0000" > /tmp/swaybar/bar-$i/icon-color
 echo "foot sudo poweroff" > /tmp/swaybar/bar-$i/event-272
 
 ((i++))
-echo " -= Tray =-" > /tmp/swaybar/bar-$i/full-text
+echo "--Scratch--" > /tmp/swaybar/bar-$i/full-text
 echo "#088F8F" > /tmp/swaybar/bar-$i/full-text-color
 #echo "i" > /tmp/swaybar/bar-$i/icon
 #echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
