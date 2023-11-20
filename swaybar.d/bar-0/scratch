@@ -1,0 +1,13 @@
+scratch() {
+  echo -n "{"
+  echo -n "\"name\":\"id_scratch\""
+  comma
+  if [ -e /tmp/swaybar/scratch ] && [ "$(cat /tmp/swaybar/scratch)" != "" ]; then
+    echo -n "\"full_text\":\"$(cat /tmp/swaybar/scratch)\""
+  else
+    echo -n "\"full_text\":\"  \""
+  fi
+  comma
+  echo -n "\"align\": \"right\""
+  echo -n "}"
+}

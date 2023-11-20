@@ -25,6 +25,7 @@ do
  echo -n ",["
 
 #---------------------------------------------------------------
+scratch && comma
 
 volume && comma
 mem && comma
@@ -54,20 +55,38 @@ read -t 1 line
 
 case  $line  in
 
- *"id_cpu"*"event"*"272"*) swaymsg -q exec 'foot -a "cpu" htop' & ;; #BTN_LEFT (272) pressed
-
- *"id_window"*"event"*"272"*) for (( i=1;i<=$(cat /tmp/swaybar/idb);i++ )); do swaymsg -q bar $i hidden_state show; done & ;;
- *"id_window"*"event"*"273"*) for (( i=1;i<=$(cat /tmp/swaybar/idb);i++ )); do swaymsg -q bar $i hidden_state hide; done & ;;
-
- *"id_vpn"*"event"*"272"*) swaymsg -q exec 'sudo rc-service openvpn start' & ;;
- *"id_vpn"*"event"*"273"*) swaymsg -q exec 'sudo rc-service openvpn stop' & ;;
-
- *"id_volume"*"event"*"272"*) echo "unmute" > $XDG_RUNTIME_DIR/_volume & \
-				amixer -Mq sset PCM 127 & ;;
- *"id_volume"*"event"*"273"*) echo "mute" > $XDG_RUNTIME_DIR/_volume & \
-				amixer -Mq set PCM 0% & ;;
- *"id_volume"*"button"*"4"*"event"*"768"*) amixer -Mq set PCM 5%+ & ;;  # WHEEL UP
- *"id_volume"*"button"*"5"*"event"*"769"*) amixer -Mq set PCM 5%- & ;;  # WHEEL DOWN
+ *"id_cpu"*"event"*"272"*) 
+							swaymsg -q exec 'foot -a "cpu" htop' 
+							;; #BTN_LEFT (272) pressed
+ *"id_window"*"event"*"272"*) 
+							for bar_id in $(cat /tmp/swaybar/idb)
+							do 
+								swaymsg -q bar $bar_id hidden_state show
+							done
+							;;
+ *"id_window"*"event"*"273"*) 
+							swaymsg -q bar hidden_state hide
+							;;
+ *"id_vpn"*"event"*"272"*) 
+							swaymsg -q exec 'sudo rc-service openvpn start'
+							;;
+ *"id_vpn"*"event"*"273"*) 
+							swaymsg -q exec 'sudo rc-service openvpn stop'
+							;;
+ *"id_volume"*"event"*"272"*) 
+							echo "unmute" > $XDG_RUNTIME_DIR/_volume;
+							amixer -Mq sset PCM 127
+							;;
+ *"id_volume"*"event"*"273"*) 
+							echo "mute" > $XDG_RUNTIME_DIR/_volume;
+							amixer -Mq set PCM 0%
+							;;
+ *"id_volume"*"button"*"4"*"event"*"768"*) 
+							amixer -Mq set PCM 5%+
+							;;  # WHEEL UP
+ *"id_volume"*"button"*"5"*"event"*"769"*)
+							amixer -Mq set PCM 5%-
+							;;  # WHEEL DOWN
 
 esac
 

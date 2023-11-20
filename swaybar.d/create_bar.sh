@@ -3,7 +3,7 @@
 mkdir -p /tmp/swaybar
 mkdir -p /tmp/swaybar/config.d
 
-i=0
+i="task-manager"
 
 echo "bar {" > /tmp/swaybar/config.d/bar-$i.conf
 echo "    id $i" >> /tmp/swaybar/config.d/bar-$i.conf
@@ -18,30 +18,47 @@ echo "      inactive_workspace #323232 #323232 #5c5c5c" >> /tmp/swaybar/config.d
 echo "    }" >> /tmp/swaybar/config.d/bar-$i.conf
 echo "}" >> /tmp/swaybar/config.d/bar-$i.conf
 
+echo "bar {" > /tmp/swaybar/config.d/bar-start.conf
+echo "    id start" >> /tmp/swaybar/config.d/bar-start.conf
+echo "    workspace_buttons no" >> /tmp/swaybar/config.d/bar-start.conf
+echo "    height 30" >> /tmp/swaybar/config.d/bar-start.conf
+echo "    status_padding 0" >> /tmp/swaybar/config.d/bar-start.conf
+echo "    status_edge_padding 0" >> /tmp/swaybar/config.d/bar-start.conf
+echo "    position bottom" >> /tmp/swaybar/config.d/bar-start.conf
+echo "    status_command \"${HOME}/.config/sway/swaybar.d/start.sh\"" >> /tmp/swaybar/config.d/bar-start.conf
+#echo "    colors {" >> /tmp/swaybar/config.d/bar-start.conf
+#echo "      statusline #ffffff" >> /tmp/swaybar/config.d/bar-start.conf
+#echo "      background #323232" >> /tmp/swaybar/config.d/bar-start.conf
+#echo "      inactive_workspace #323232 #323232 #5c5c5c" >> /tmp/swaybar/config.d/bar-start.conf
+#echo "    }" >> /tmp/swaybar/config.d/bar-start.conf
+echo "}" >> /tmp/swaybar/config.d/bar-start.conf
+
+exit 
+
 echo "$(( 1400/30 ))" > /tmp/swaybar/idb_max
 
 for (( i=1;i<=$(cat /tmp/swaybar/idb_max);i++ )); do
- echo "bar {" > /tmp/swaybar/config.d/bar-$i.conf
- echo "    id $i" >> /tmp/swaybar/config.d/bar-$i.conf
- echo "    workspace_buttons no" >> /tmp/swaybar/config.d/bar-$i.conf
- echo "    mode hide" >> /tmp/swaybar/config.d/bar-$i.conf
- echo "    modifier none" >> /tmp/swaybar/config.d/bar-$i.conf
- echo "    hidden_state hide" >> /tmp/swaybar/config.d/bar-$i.conf
- echo "    height 30" >> /tmp/swaybar/config.d/bar-$i.conf
- echo "    gaps 0 5 $(( 1400 - $i * 30 )) 2355" >> /tmp/swaybar/config.d/bar-$i.conf
- echo "    status_command \"${HOME}/.config/sway/swaybar.d/bar-x.sh $i\"" >> /tmp/swaybar/config.d/bar-$i.conf
- echo "    colors {" >> /tmp/swaybar/config.d/bar-$i.conf
- echo "      statusline #ffffff" >> /tmp/swaybar/config.d/bar-$i.conf
- echo "      background #323232" >> /tmp/swaybar/config.d/bar-$i.conf
- echo "    }" >> /tmp/swaybar/config.d/bar-$i.conf
- echo "}" >> /tmp/swaybar/config.d/bar-$i.conf
- rm -rf /tmp/swaybar/bar-$i
- mkdir -p /tmp/swaybar/bar-$i
+	echo "bar {" > /tmp/swaybar/config.d/bar-$i.conf
+	echo "    id $i" >> /tmp/swaybar/config.d/bar-$i.conf
+	echo "    workspace_buttons no" >> /tmp/swaybar/config.d/bar-$i.conf
+	echo "    mode hide" >> /tmp/swaybar/config.d/bar-$i.conf
+	echo "    modifier none" >> /tmp/swaybar/config.d/bar-$i.conf
+	echo "    hidden_state hide" >> /tmp/swaybar/config.d/bar-$i.conf
+	echo "    height 30" >> /tmp/swaybar/config.d/bar-$i.conf
+	echo "    gaps 0 5 $(( 1400 - $i * 30 )) 2355" >> /tmp/swaybar/config.d/bar-$i.conf
+	echo "    status_command \"${HOME}/.config/sway/swaybar.d/bar-x.sh $i\"" >> /tmp/swaybar/config.d/bar-$i.conf
+	echo "    colors {" >> /tmp/swaybar/config.d/bar-$i.conf
+	echo "      statusline #ffffff" >> /tmp/swaybar/config.d/bar-$i.conf
+	echo "      background #323232" >> /tmp/swaybar/config.d/bar-$i.conf
+	echo "    }" >> /tmp/swaybar/config.d/bar-$i.conf
+	echo "}" >> /tmp/swaybar/config.d/bar-$i.conf
+	rm -rf /tmp/swaybar/bar-$i
+	mkdir -p /tmp/swaybar/bar-$i
 done
 
 if [ -e ~/.config/sway/swaybar.d/store/idb ]; then
- ~/.config/sway/swaybar.d/manage_bar.sh -r
- exit 1
+	~/.config/sway/swaybar.d/manage_bar.sh -r
+	exit 1
 fi
 
 i=1
@@ -86,6 +103,13 @@ echo "#FFFFFF" > /tmp/swaybar/bar-$i/full-text-color
 echo "" > /tmp/swaybar/bar-$i/icon
 echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
 echo "foot" > /tmp/swaybar/bar-$i/event-272
+
+((i++))
+echo " Geany" > /tmp/swaybar/bar-$i/full-text
+echo "#FFFFFF" > /tmp/swaybar/bar-$i/full-text-color
+echo "" > /tmp/swaybar/bar-$i/icon
+echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
+echo "geany" > /tmp/swaybar/bar-$i/event-272
 
 ((i++))
 echo "-= Logs =-" > /tmp/swaybar/bar-$i/full-text

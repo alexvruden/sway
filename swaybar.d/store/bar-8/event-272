@@ -1,1 +1,0 @@
-foot -a 'log' sudo tail -f /var/log/messages

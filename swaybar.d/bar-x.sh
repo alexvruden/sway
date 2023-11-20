@@ -2,7 +2,7 @@
 
 set -a
 
-idb=$1
+idb="$1"
 
 SWB_ICON_WIDTH=40
 SWB_TEXT_WIDTH=150
@@ -85,6 +85,6 @@ do
                 ;;
         esac
     else
-        sleep 1s
+        sleep 7d
     fi
 done

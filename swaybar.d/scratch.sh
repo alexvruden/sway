@@ -1,62 +1,39 @@
 #!/bin/bash
 
-set -a
+scratch_width=$1
+scratch_right=$2
+scratch_left=$3
 
-name_scrath_separator="--Scratch--"
+sc_heigth=$(swaymsg -p -t get_outputs | awk '/mode:/ {print $3}' | cut -dx -f2)
 
-while true; do
-
-  swaymsg -p -t get_tree >/tmp/get_tree
-  id="$(cat /tmp/get_tree | tr -d '\n')"
-# cut scratch
-  id="${id#*scratch}"
-  id="${id%output*}"
-
- pid_prev=0
+_height=30
+cut_left=$scratch_left
+cut_right=$scratch_right
+cut_top=0
 
 while true; do
-# find first item
-  name_w="$(echo "${id}" | tr -d '\"\(\)\r\t\v\n')"
 
-  id="${id#*pid:}"
-  pid=$(echo "${id}" | cut -d, -f1 | tr -d ' ')
+	for (( i=1;i<=100;i++ )); do
+		if [ ! -d /tmp/swaybar/bar-scratch-window-$i ]; then break; fi
+		swaymsg -q bar scratch-window-$i mode hide
+		if [ "$(cat /tmp/swaybar/bar-task-manager/id_scratch_windows_status )" = "off" ]; then
+			swaymsg -q bar scratch-window-$i hidden_state hide
+		else
+			swaymsg -q bar scratch-window-$i hidden_state show
+		fi
+		swaymsg -q bar scratch-window-$i workspace_buttons no
+		swaymsg -q bar scratch-window-$i modifier none
+		swaymsg -q bar scratch-window-$i height $_height
 
-  if [ "${pid}" = "${pid_prev}" ]; then break; fi
+		cut_bottom=$(( 5 + $i * $_height ))
+		cut_top=$(( $sc_heigth - ${cut_bottom} - $_height - 30 ))
 
-  pid_prev=${pid}
-  test_str=$(echo "${id}" | awk -F ' ' '{print $2}')
-  if [ "${test_str}" != "app_id:" ]; then break; fi
-  app_id=$(echo "${id}" | awk -F'"' '{print $2}')
-
-# todo
-  name_w="${name_w#*con}"
-  len_1_name=${#name_w}
-  name_w_t="${name_w#*xdg_shell, pid: $pid, app_id: $app_id}"
-  var_name="xdg_shell, pid: $pid, app_id: $app_id"
-  len_2_name=${#name_w_t}
-  len_var_name=${#var_name}
-  len_name=$(( $len_1_name - $len_2_name - $len_var_name ))
-  names=$(echo "$name_w" | cut -c-$len_name)
-
-  ~/.config/sway/swaybar.d/manage_bar.sh -q --get_id "${app_id}[${pid}]"
-  id_bar=$?
-
-  if [ $id_bar -eq 255 ]; then
-      ~/.config/sway/swaybar.d/manage_bar.sh --after "$name_scrath_separator" --text "${app_id}[${pid}]"
-      if [ $? -ne 0 ]; then break; fi
-      ~/.config/sway/swaybar.d/manage_bar.sh -q --get_id "${app_id}[${pid}]"
-      id_bar=$?
-      if [ $id_bar -eq 255 ]; then break; fi
-
-      echo "${pid}" >/tmp/swaybar/bar-${id_bar}/pid-file
-      event_272="sway [pid=\"${pid}\"] focus & . ~/.config/sway/swaybar.d/manage_bar.sh --delete \"${app_id}[${pid}]\" "
-      echo "$event_272" > /tmp/swaybar/bar-${id_bar}/event-272
-      about=$(cat /tmp/get_tree | grep "pid: ${pid}")
-      echo "${names}" > /tmp/swaybar/bar-${id_bar}/about_bar
-  fi
-
-done
-
-sleep 5s
+		swaymsg -q bar scratch-window-$i gaps ${cut_top} ${cut_right} ${cut_bottom} ${cut_left}
+		swaymsg -q bar scratch-window-$i status_padding 0
+		swaymsg -q bar scratch-window-$i status_edge_padding 0
+		swaymsg -q bar scratch-window-$i status_command "${HOME}/.config/sway/swaybar.d/bar-scratch-x.sh scratch-window-$i $scratch_width"
+		~/.config/sway/swaybar.d/bar-colors.sh "my-colors" "scratch-window-$i" >/dev/null 2>&1
+	done
+	sleep 5s
 done
 

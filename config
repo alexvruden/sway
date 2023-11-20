@@ -32,9 +32,14 @@ set $term foot
 font pango:monospace 10
 
 output HDMI-A-1 resolution 2560x1440 position 2560,0
+
 output * bg ${HOME}/.config/sway/sway.png fill
+
 exec swayidle -w timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"'
+
 input "10077:2982:USB_OPTICAL_MOUSE" {
+	events enabled
+	middle_emulation enabled
 	drag enabled
 	accel_profile "flat"    
 	pointer_accel -0.1
@@ -51,7 +56,19 @@ input "49396:1216:SZH_usb_keyboard" {
 	#repeat_rate 5
 }
 
-    floating_modifier $mod normal
+floating_modifier $mod normal
+    
+focus_follows_mouse no
+
+bar {
+    id task-manager
+    workspace_buttons no
+    height 30
+    status_padding 0
+    status_edge_padding 0
+    position bottom
+    status_command "~/.config/sway/swaybar.d/start.sh"
+}
 
 bindsym {
 
@@ -126,8 +143,13 @@ bindsym {
 
 bindsym --border button3 floating toggle
 bindsym --border control+button3 kill
+#bindsym --border button2 kill
+
 bindsym --whole-window $mod+button5 focus next
 bindsym --whole-window $mod+button4 focus prev
+
+bindsym --whole-window control+button5 workspace next
+bindsym --whole-window control+button4 workspace prev
 
 mode "resize" {
     bindsym $left resize shrink width 10px
@@ -150,7 +172,6 @@ for_window [title="."] title_format " %title : %app_id"
 for_window [app_id = "floating"] floating enable
 for_window [app_id = "floating_update"] floating enable, resize set width 1000px height 600px
 
-for_window [title = "0x55bf2*"] floating enable
 for_window [title = "Administrator privileges required"] floating enable
 
 for_window [app_id = "foot"] floating enable
@@ -160,8 +181,6 @@ for_window [app_id="firefox" title="Library"] floating enable, border pixel 3, s
 #for_window [app_id="foot"] move container to workspace $wsp1; focus
 
 for_window [app_id="firefox"] move container to workspace $wsp2; focus; floating enable
-
-for_window [app_id="rtorrent"] move container to workspace $wsp2; focus
 for_window [app_id="internet"] move container to workspace $wsp2; focus
 
 for_window [app_id="music"] move container to workspace $wsp3; focus
@@ -169,7 +188,6 @@ for_window [app_id="music"] move container to workspace $wsp3; focus
 for_window [app_id="mpv"] move container to workspace $wsp4; focus; floating enable
 for_window [app_id="video"] move container to workspace $wsp4; focus
 
-for_window [app_id="Waydroid"] move container to workspace $wsp5; focus
 for_window [app_id="games"] move container to workspace $wsp5; focus
 
 for_window [app_id="log"] move container to workspace $wsp7; focus; floating enable
@@ -182,5 +200,4 @@ for_window [app_id="cpu"] move to workspace $wsp10; focus
 
 bindsym control+shift+escape exec $term -a 'cpu' htop
 
-include /tmp/swaybar/config.d/*
-
+#include /tmp/swaybar/config.d/*
