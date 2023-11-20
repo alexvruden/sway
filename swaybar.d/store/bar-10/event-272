@@ -1,1 +1,0 @@
-foot -a 'log' tail -f /var/log/openvpn-client.log
