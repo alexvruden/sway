@@ -13,7 +13,7 @@ cut_top=0
 
 while true; do
 
-	for (( i=1;i<=100;i++ )); do
+	for (( i=1;i<=$(cat /tmp/swaybar/bar-task-manager/scratch_windows);i++ )); do
 		if [ ! -d /tmp/swaybar/bar-scratch-window-$i ]; then break; fi
 		swaymsg -q bar scratch-window-$i mode hide
 		if [ "$(cat /tmp/swaybar/bar-task-manager/id_scratch_windows_status )" = "off" ]; then
@@ -34,6 +34,6 @@ while true; do
 		swaymsg -q bar scratch-window-$i status_command "${HOME}/.config/sway/swaybar.d/bar-scratch-x.sh scratch-window-$i $scratch_width"
 		~/.config/sway/swaybar.d/bar-colors.sh "my-colors" "scratch-window-$i" >/dev/null 2>&1
 	done
-	sleep 5s
+	sleep 1s
 done
 

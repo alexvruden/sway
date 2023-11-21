@@ -21,7 +21,10 @@ clock_width=80
 scratch_windows_width=60
 lang_width=40
 
-task_width=$(( $sc_width - $st_icon_width - $sys_tray_icon_width - $scratch_icon_width - $scratch_windows_width - $clock_width - $lang_width - 5 ))
+num_focused_workspace_win=20
+focused_workspace_win_width=$(( 2000 / $num_focused_workspace_win ))
+
+task_width=$(( $sc_width - $st_icon_width - $sys_tray_icon_width - $scratch_icon_width - $scratch_windows_width - $clock_width - $lang_width - 5 - $focused_workspace_win_width * $num_focused_workspace_win ))
 
 scratch_right=$(( $sys_tray_icon_width + $clock_width + $lang_width ))
 #scratch_left=$(( $st_icon_width + $scratch_icon_width + $scratch_windows_width ))
@@ -48,6 +51,7 @@ do
 	echo " $0 : main loop" >>$log
 	swaymsg -p -t get_tree >/tmp/get_tree
 	id="$(cat /tmp/get_tree | tr -d '\n')"
+	all_workspace="$id"
 	# cut scratch
 	id="${id#*scratch}"
 	id="${id%output*}"
@@ -93,10 +97,6 @@ do
 	echo "$num_scratch" > /tmp/swaybar/bar-task-manager/scratch_windows
 	echo " $0 : num_scratch=$num_scratch" >>$log
 	
-#	if [ "x$num_scratch" != "x0" ]; then
-		#. ~/.config/sway/swaybar.d/scratch.sh "$scratch_right" "$scratch_left" >/dev/null 2>&1
-#	fi
-
 	echo -n ",["
 	
 	echo -n "{"
@@ -120,11 +120,9 @@ do
 	echo -n "}"
 	
 	echo -n ","
-
-	#if [ -e /tmp/swaybar/bar-task-manager/scratch_windows ] && [ "x$(cat /tmp/swaybar/bar-task-manager/scratch_windows)" != "x" ]; then
-		#scratch_windows="$(cat /tmp/swaybar/bar-task-manager/scratch_windows)"
-	#fi
 	
+	echo "true" > /tmp/swaybar/bar-task-manager/id-scratch-windows-separator
+
 	echo -n "{"
 	echo -n "\"name\":\"id_scratch_windows\","
 	echo -n "\"separator_block_width\": 0,"
@@ -134,17 +132,85 @@ do
 	else
 		echo -n "\"full_text\":\" \","
 	fi
-	echo -n "\"separator\":false,"
+	if [ -e /tmp/swaybar/bar-task-manager/id-scratch-windows-separator ] && [ "x$(cat /tmp/swaybar/bar-task-manager/id-scratch-windows-separator)" != "x" ]; then
+		echo -n "\"separator\":$(cat /tmp/swaybar/bar-task-manager/id-scratch-windows-separator),"
+	else
+		echo -n "\"separator\":false,"
+	fi
 	echo -n "\"align\": \"left\""
 	echo -n "}"
 	
 	echo -n ","
 	
+	name_focused_workspace="$(swaymsg -p -t get_workspaces | grep focused | cut -d' ' -f2)"
+
+	id=${all_workspace#*$name_focused_workspace}
+
+	for ((i=1;i<=20;i++)); do
+		id=${id%workspace*}
+	done
+
+	num_win=0
+	pid_prev=0
+	
+	for ((i=1;i<=$num_focused_workspace_win;i++)); do
+		rm -f /tmp/swaybar/bar-task-manager/id-focused-workspace-win-$i-* >/dev/null 2>&1
+	done
+
+	while true; do
+		name_w="$(echo "${id}" | tr -d '\"\(\)\r\t\v\n')"
+		id="${id#*pid:}"
+		pid=$(echo "${id}" | cut -d, -f1 | tr -d ' ')
+		if [ "${pid}" = "${pid_prev}" ]; then break; fi
+		pid_prev=${pid}
+		app_id_test_str=$(echo "${id}" | awk -F ' ' '{print $2}')
+		if [ "${app_id_test_str}" != "app_id:" ]; then break; fi
+		app_id=$(echo "${id}" | awk -F'"' '{print $2}')
+		lenght_app_id=${#app_id}
+		app_id_short="$(echo "${app_id}" | cut -c1-10)~"
+		num_win=$(( ${num_win} + 1 ))
+		#full_text="[$app_id_short:$pid]"
+		if [ $lenght_app_id -gt 11 ]; then
+			full_text="$app_id_short"
+		else
+			full_text="$app_id"
+		fi
+		echo "${full_text}" > /tmp/swaybar/bar-task-manager/id-focused-workspace-win-${num_win}-full-text
+		echo "${app_id}" > /tmp/swaybar/bar-task-manager/id-focused-workspace-win-${num_win}-app_id
+		echo "${pid}" > /tmp/swaybar/bar-task-manager/id-focused-workspace-win-${num_win}-pid
+
+		echo "true" > /tmp/swaybar/bar-task-manager/id-focused-workspace-win-${num_win}-separator
+	done
+	
+	for ((i=1;i<=$num_focused_workspace_win;i++)); do
+		
+		echo -n "{"
+		echo -n "\"name\":\"id_focused_workspace_win_$i\","
+		echo -n "\"separator_block_width\": 0,"
+		echo -n "\"min_width\": $focused_workspace_win_width,"
+		if [ -e /tmp/swaybar/bar-task-manager/id-focused-workspace-win-$i-full-text ] && [ "x$(cat /tmp/swaybar/bar-task-manager/id-focused-workspace-win-$i-full-text)" != "x" ]; then
+			echo -n "\"full_text\":\"$(cat /tmp/swaybar/bar-task-manager/id-focused-workspace-win-$i-full-text)\","
+		else
+			echo -n "\"full_text\":\" \","
+		fi
+		if [ -e /tmp/swaybar/bar-task-manager/id-focused-workspace-win-$i-separator ] && [ "x$(cat /tmp/swaybar/bar-task-manager/id-focused-workspace-win-$i-separator)" != "x" ]; then
+			echo -n "\"separator\":$(cat /tmp/swaybar/bar-task-manager/id-focused-workspace-win-$i-separator),"
+		else
+			echo -n "\"separator\":false,"
+		fi
+		if [ $i -eq $num_win ]; then
+			echo -n "\"color\":\"#00ff00\","
+		fi
+		echo -n "\"align\": \"center\""
+		echo -n "}"	
+		echo -n ","
+	done
+	
 	echo -n "{"
 	echo -n "\"name\":\"id_null\","
 	echo -n "\"separator_block_width\": 0,"
 	echo -n "\"min_width\": $task_width,"
-	echo -n "\"full_text\":\"  \","
+	echo -n "\"full_text\":\" \","
 	echo -n "\"separator\":false,"
 	echo -n "\"align\": \"left\""
 	echo -n "}"
@@ -156,6 +222,14 @@ do
 	echo -n "\"separator_block_width\": 0,"
 	echo -n "\"min_width\": $sys_tray_icon_width,"
 	echo -n "\"full_text\":\"\","
+	#for test put in foot: echo "#ff0000" >/tmp/swaybar/bar-task-manager/id-sys-tray-color
+	if [ -e /tmp/swaybar/bar-task-manager/id-sys-tray-color ] && [ "x$(cat /tmp/swaybar/bar-task-manager/id-sys-tray-color)" != "x" ] && [ ${id_sys_tray_color} ]; then
+		id_sys_tray_color=
+		echo -n "\"color\":\"$(cat /tmp/swaybar/bar-task-manager/id-sys-tray-color)\","
+	else
+		echo -n "\"color\":\"#ffffffff\","
+		id_sys_tray_color="x"
+	fi
 	echo -n "\"separator\":true,"
 	echo -n "\"align\": \"center\""
 	echo -n "}"
@@ -190,6 +264,8 @@ do
 	echo  -n "]"
 
 	read -t 1 line
+	line_win="$line"
+	
 	case  $line  in
 		*"id_lang"*"event"*"272"*) 
 									swaymsg -q input "49396:1216:SZH_usb_keyboard" xkb_switch_layout next 
@@ -270,6 +346,15 @@ do
 											swaymsg -q bar scratch-window-$i hidden_state hide
 										done
 									fi
+									;;
+		 *"id_focused_workspace_win_"*"event"*"272"*)
+									for ((i=1;i<=$num_focused_workspace_win;i++)); do
+										if [ "x$(echo $line | grep id_focused_workspace_win_$i)" != "x" ]; then
+											id_focused_workspace_win_pid="$(cat /tmp/swaybar/bar-task-manager/id-focused-workspace-win-$i-pid)"
+											swaymsg -q exec sway [pid="$id_focused_workspace_win_pid"] focus
+											break
+										fi
+									done
 									;;
 	esac
 done

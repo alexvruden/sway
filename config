@@ -9,16 +9,18 @@ set $down j
 set $up k
 set $right l
 
-set $wsp1 "1: TTY"
-set $wsp2 "2: INTERNET"
-set $wsp3 "3: MUSIC"
-set $wsp4 "4: VIDEO"
-set $wsp5 "5: GAMES"
-set $wsp6 "6: "
-set $wsp7 "7: LOG"
-set $wsp8 "8: COMMANDER"
-set $wsp9 "9: TORRENT"
-set $wsp10 "10: CPU"
+#random names worspaces for script
+
+set $wsp1 "ijsfoip-sdjuf8sd0fj3-sdfs"
+set $wsp2 "l-massadfg0-234msdfdse-r2"
+set $wsp3 "ajhdjb-hawoei-fj893w-23rf"
+set $wsp4 "avse-34wegve56t-hpk8ij-ci"
+set $wsp5 "zdsl-owep9f-3332m4iogdf0g"
+set $wsp6 "dsvnreu-iy30424nhifuuer9g"
+set $wsp7 "vdfhort3423r-nicsd7f2344b"
+set $wsp8 "csdgvdhr0er32hijbi49ger3g"
+set $wsp9 "fbrtg-9823hi2bcda76sf43n6"
+set $wsp10 "cxgvretfg82341h2dbqw62w1d"
 
 seat seat0 {
 

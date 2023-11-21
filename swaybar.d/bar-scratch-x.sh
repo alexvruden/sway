@@ -35,9 +35,12 @@ do
         read -t 1 line
         case  $line  in
             *"id_bar_$idb"*"event"*"272"*)
- #               if [ -e /tmp/swaybar/bar-$idb/event-272 ]; then
-                    swaymsg -q exec "$(cat /tmp/swaybar/bar-$idb/event-272)"
- #               fi
+                swaymsg -q exec "$(cat /tmp/swaybar/bar-$idb/event-272)"
+				echo "off" > /tmp/swaybar/bar-task-manager/id_scratch_windows_status
+				for (( i=1;i<=$(cat /tmp/swaybar/bar-task-manager/scratch_windows);i++ ))
+				do 
+					swaymsg -q bar scratch-window-$i hidden_state hide
+				done
                 ;;
         esac
     else
