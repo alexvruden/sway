@@ -26,7 +26,7 @@ do
     echo -n "\"min_width\": $w_scratch,"
     echo -n "\"align\": \"left\","
     if [ -e /tmp/swaybar/bar-$idb/full-text ]; then
-        echo -n "\"full_text\":\"$(cat /tmp/swaybar/bar-$idb/full-text)\""
+        echo -n "\"full_text\":\"  $(cat /tmp/swaybar/bar-$idb/full-text)\""
     fi
     echo -n "}"
 

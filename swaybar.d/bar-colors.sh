@@ -1,9 +1,5 @@
 #!/bin/bash
 
-#log="/tmp/start.log"
-log="/dev/null"
-echo " $0 : Start" >>$log
-
 rm -rf /tmp/swaybar/color-theme
 mkdir -p /tmp/swaybar/color-theme
 mkdir -p /tmp/swaybar/color-theme/default
@@ -68,7 +64,6 @@ if [ $bar_name ]; then
 		fi
 	done
 	if [ ! $st ]; then
-		echo " $0 : not valid bar name, exit" >>$log
 		exit 1
 	fi
 fi
@@ -92,9 +87,14 @@ if [ $go ]; then
 		do
 			set_color "$bar_name"
 		done
+		# hidden bars : alpha=0
+		for i in "w_next w_prev w_by_name"; do
+			swaymsg bar $i colors focused_background "#00000000"
+			swaymsg bar $i colors focused_statusline "#00000000"
+			swaymsg bar $i colors focused_separator "#00000000"
+		done
 	else
 		set_color "$bar_name"
 	fi
 fi
 
-echo " $0 : end" >>$log

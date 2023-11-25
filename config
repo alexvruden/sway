@@ -9,18 +9,8 @@ set $down j
 set $up k
 set $right l
 
-#random names worspaces for script
-
-set $wsp1 "ijsfoip-sdjuf8sd0fj3-sdfs"
-set $wsp2 "l-massadfg0-234msdfdse-r2"
-set $wsp3 "ajhdjb-hawoei-fj893w-23rf"
-set $wsp4 "avse-34wegve56t-hpk8ij-ci"
-set $wsp5 "zdsl-owep9f-3332m4iogdf0g"
-set $wsp6 "dsvnreu-iy30424nhifuuer9g"
-set $wsp7 "vdfhort3423r-nicsd7f2344b"
-set $wsp8 "csdgvdhr0er32hijbi49ger3g"
-set $wsp9 "fbrtg-9823hi2bcda76sf43n6"
-set $wsp10 "cxgvretfg82341h2dbqw62w1d"
+#random names workspaces for script
+include ${HOME}/.config/sway/workspaces.d/*
 
 seat seat0 {
 
@@ -53,7 +43,7 @@ input "49396:1216:SZH_usb_keyboard" {
 	xkb_options "grp:alt_shift_toggle"
 	xkb_switch_layout next
 #	xkb_capslock disabled
-	xkb_numlock enabled
+#	xkb_numlock enabled
 	#repeat_delay 3000
 	#repeat_rate 5
 }
@@ -65,6 +55,7 @@ focus_follows_mouse no
 bar {
     id task-manager
     workspace_buttons no
+	strip_workspace_numbers yes
     height 30
     status_padding 0
     status_edge_padding 0
@@ -104,28 +95,6 @@ bindsym {
     $mod+Shift+Up move up
     $mod+Shift+Right move right
 
-    $mod+1 workspace $wsp1
-    $mod+2 workspace $wsp2
-    $mod+3 workspace $wsp3
-    $mod+4 workspace $wsp4
-    $mod+5 workspace $wsp5
-    $mod+6 workspace $wsp6
-    $mod+7 workspace $wsp7
-    $mod+8 workspace $wsp8
-    $mod+9 workspace $wsp9
-    $mod+0 workspace $wsp10
-
-    $mod+Shift+1 move container to workspace $wsp1
-    $mod+Shift+2 move container to workspace $wsp2
-    $mod+Shift+3 move container to workspace $wsp3
-    $mod+Shift+4 move container to workspace $wsp4
-    $mod+Shift+5 move container to workspace $wsp5
-    $mod+Shift+6 move container to workspace $wsp6
-    $mod+Shift+7 move container to workspace $wsp7
-    $mod+Shift+8 move container to workspace $wsp8
-    $mod+Shift+9 move container to workspace $wsp9
-    $mod+Shift+0 move container to workspace $wsp10
-
     $mod+b splith
     $mod+v splitv
 
@@ -144,7 +113,8 @@ bindsym {
 }
 
 bindsym --border button3 floating toggle
-bindsym --border control+button3 kill
+bindsym --border control+button3 move scratchpad
+bindsym --border Alt+button3 kill
 #bindsym --border button2 kill
 
 bindsym --whole-window $mod+button5 focus next
@@ -180,7 +150,8 @@ for_window [app_id = "foot"] floating enable
 
 for_window [app_id="firefox" title="Library"] floating enable, border pixel 3, sticky enable
 
-#for_window [app_id="foot"] move container to workspace $wsp1; focus
+
+for_window [app_id="geany"] move container to workspace $wsp1; focus; floating enable
 
 for_window [app_id="firefox"] move container to workspace $wsp2; focus; floating enable
 for_window [app_id="internet"] move container to workspace $wsp2; focus
@@ -202,4 +173,4 @@ for_window [app_id="cpu"] move to workspace $wsp10; focus
 
 bindsym control+shift+escape exec $term -a 'cpu' htop
 
-#include /tmp/swaybar/config.d/*
+#include config.d/*

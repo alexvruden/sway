@@ -1,18 +1,25 @@
 #!/bin/bash
 
-#log="/tmp/start.log"
-log="/dev/null"
-
-echo " $0 : Start" >$log
-echo " $0 : goto create" >>$log
-
 mkdir -p /tmp/swaybar
 rm -rf /tmp/swaybar/bar-task-manager
 mkdir -p /tmp/swaybar/bar-task-manager
 
+. ~/.config/sway/swaybar.d/icmp.sh &
 ~/.config/sway/swaybar.d/create.sh >/dev/null 2>&1
 
 sc_width=$(swaymsg -p -t get_outputs | awk '/mode:/ {print $3}' | cut -dx -f1)
+
+count_workspace=1
+all_workspaces=0
+c_workspace=
+for file in ${HOME}/.config/sway/workspaces.d/*; do
+	wsp_name="$(cat $file | cut -d' ' -f3)"
+	if [ $wsp_name ]; then
+		c_workspace="$wsp_name $c_workspace"
+		((all_workspaces++))
+	fi
+done
+cur_wspc_name="$(echo "$c_workspace" | cut -d' ' -f1)"
 
 st_icon_width=80
 sys_tray_icon_width=40
@@ -20,35 +27,42 @@ scratch_icon_width=40
 clock_width=80
 scratch_windows_width=60
 lang_width=40
+lan_width=40
+rotate_workspace_width=40
 
-num_focused_workspace_win=20
+width_widgets_right=$(( $sys_tray_icon_width + $clock_width + $lang_width + $rotate_workspace_width + $lan_width ))
+width_widgets_left=$(( $st_icon_width + $scratch_icon_width + $scratch_windows_width ))
+width_widgets=$(( $width_widgets_left + $width_widgets_right ))
+space_task_width=$(( $sc_width - $width_widgets - 5 ))
+
+if [ $space_task_width -gt 2000 ]; then
+	num_focused_workspace_win=20
+elif [ $sc_width -gt 1000 ]; then
+	num_focused_workspace_win=10
+else
+	num_focused_workspace_win=5
+fi
+
 focused_workspace_win_width=$(( 2000 / $num_focused_workspace_win ))
 
-task_width=$(( $sc_width - $st_icon_width - $sys_tray_icon_width - $scratch_icon_width - $scratch_windows_width - $clock_width - $lang_width - 5 - $focused_workspace_win_width * $num_focused_workspace_win ))
-
-scratch_right=$(( $sys_tray_icon_width + $clock_width + $lang_width ))
-#scratch_left=$(( $st_icon_width + $scratch_icon_width + $scratch_windows_width ))
-scratch_left=$(( $st_icon_width + $scratch_icon_width ))
-
+task_width=$(( $space_task_width - $focused_workspace_win_width * $num_focused_workspace_win ))
 
 echo "off" > /tmp/swaybar/bar-task-manager/id_window_status
 echo "off" > /tmp/swaybar/bar-task-manager/id_sys_tray_status
 echo "off" > /tmp/swaybar/bar-task-manager/id_time_status
 echo "off" > /tmp/swaybar/bar-task-manager/id_scratch_windows_status
+echo "off" > /tmp/swaybar/bar-task-manager/id_sys_tray_lan_status
 
 echo "0" > /tmp/swaybar/bar-task-manager/scratch_windows
 
-~/.config/sway/swaybar.d/scratch.sh "$task_width" "$scratch_right" "$scratch_left" & >/dev/null 2>&1
+~/.config/sway/swaybar.d/scratch.sh "$space_task_width" "$width_widgets_right" "$width_widgets_left" & >/dev/null 2>&1
 
 echo '{"version": 1,"click_events": true}'
 echo '['
 echo '[]'
 
-echo " $0 : goto loop" >>$log
-
 while true;
 do
-	echo " $0 : main loop" >>$log
 	swaymsg -p -t get_tree >/tmp/get_tree
 	id="$(cat /tmp/get_tree | tr -d '\n')"
 	all_workspace="$id"
@@ -58,7 +72,6 @@ do
 
 	num_scratch=0
 	pid_prev=0
-	echo " $0 : calculate scratch" >>$log
 	while true; do
 		# find first item
 		name_w="$(echo "${id}" | tr -d '\"\(\)\r\t\v\n')"
@@ -95,7 +108,6 @@ do
 
 	done
 	echo "$num_scratch" > /tmp/swaybar/bar-task-manager/scratch_windows
-	echo " $0 : num_scratch=$num_scratch" >>$log
 	
 	echo -n ",["
 	
@@ -236,6 +248,22 @@ do
 	
 	echo -n ","
 	
+	echo -n "{"
+	echo -n "\"name\":\"id_lan\","
+	if [ -e /tmp/swaybar/bar-task-manager/icmp-enp4s0 ] || [ -e /tmp/swaybar/bar-task-manager/icmp-wlan0 ] || [ -e /tmp/swaybar/bar-task-manager/icmp-tun0 ]; then
+		echo -n "\"color\":\"#088F8F\","
+	else
+		echo -n "\"color\":\"#FF0000\","
+	fi
+	echo -n "\"separator\":true,"
+	echo -n "\"separator_block_width\": 0,"
+	echo -n "\"min_width\": $lan_width,"
+	echo -n "\"align\": \"center\","
+	echo -n "\"full_text\":\"\""
+	echo -n "}"
+
+	echo -n ","
+
 	ilang=$(swaymsg -p -t get_inputs | tail -n 32 | grep -m 1 'Active Keyboard Layout' | awk '{print $4}')
 
 	echo -n "{"
@@ -256,9 +284,20 @@ do
 	echo -n "{"
 	echo -n "\"name\": \"id_time\","
 	echo -n "\"separator_block_width\": 0,"
+	echo -n "\"separator\": true,"
 	echo -n "\"min_width\": $clock_width,"
 	echo -n "\"align\": \"center\","
 	echo -n "\"full_text\": \"$(date "+%H:%M")\""
+	echo -n "}"
+	
+	echo -n ","
+
+	echo -n "{"
+	echo -n "\"name\": \"id_rotate_workspace\","
+	echo -n "\"separator_block_width\": 0,"
+	echo -n "\"min_width\": $rotate_workspace_width,"
+	echo -n "\"align\": \"center\","
+	echo -n "\"full_text\": \"\""
 	echo -n "}"
 
 	echo  -n "]"
@@ -267,18 +306,71 @@ do
 	line_win="$line"
 	
 	case  $line  in
+		*"id_rotate_workspace"*"event"*"768"*) 
+									swaymsg -q workspace next 
+									;;
+		*"id_rotate_workspace"*"event"*"769"*) 
+									swaymsg -q workspace prev 
+									;;
 		*"id_lang"*"event"*"272"*) 
 									swaymsg -q input "49396:1216:SZH_usb_keyboard" xkb_switch_layout next 
 									;;
+		*"id_lan"*"event"*"272"*) 
+									if [ -e /tmp/swaybar/bar-task-manager/id_sys_tray_lan_status ] && [ "$(cat /tmp/swaybar/bar-task-manager/id_sys_tray_lan_status)" = "off" ]; then
+										echo "off" > /tmp/swaybar/bar-task-manager/id_time_status
+										swaymsg -q bar sys-tray-clock-full hidden_state hide
+
+										echo "off" > /tmp/swaybar/bar-task-manager/id_sys_tray_status
+										for bar_id in $(cat /tmp/swaybar/id_menu_tray)
+										do 
+											swaymsg -q bar $bar_id hidden_state hide
+										done
+
+										echo "on" > /tmp/swaybar/bar-task-manager/id_sys_tray_lan_status
+										for bar_id in $(cat /tmp/swaybar/id_menu_lan)
+										do 
+											swaymsg -q bar $bar_id hidden_state show
+										done
+										
+									else
+										echo "off" > /tmp/swaybar/bar-task-manager/id_sys_tray_lan_status
+										for bar_id in $(cat /tmp/swaybar/id_menu_lan)
+										do 
+											swaymsg -q bar $bar_id hidden_state hide
+										done
+									fi
+									;;
+		 *"id_window"*"event"*"768"*)
+		 							if [ $count_workspace -le $all_workspaces ]; then
+										cur_wspc_name="$(echo "$c_workspace" | cut -d' ' -f$count_workspace)"
+										if [ $cur_wspc_name ]; then
+											swaymsg -q workspace $cur_wspc_name >/dev/null 2>&1
+											((count_workspace++))
+										fi
+									else
+										count_workspace=1
+									fi
+									;;
+		 *"id_window"*"event"*"769"*)
+		 							if [ $count_workspace -gt 0 ]; then
+										cur_wspc_name="$(echo "$c_workspace" | cut -d' ' -f$count_workspace)"
+										if [ $cur_wspc_name ]; then
+											swaymsg -q workspace $cur_wspc_name >/dev/null 2>&1
+											((count_workspace--))
+										fi
+									else
+										count_workspace=$all_workspaces
+		 							fi
+									;;
 		 *"id_window"*"event"*"272"*)
 									if [ -e /tmp/swaybar/bar-task-manager/id_window_status ] && [ "$(cat /tmp/swaybar/bar-task-manager/id_window_status)" = "off" ]; then
-										for bar_id in $(cat /tmp/swaybar/idb)
+										for bar_id in $(cat /tmp/swaybar/id_menu_start)
 										do 
 											swaymsg -q bar $bar_id hidden_state show
 										done
 										echo "on" > /tmp/swaybar/bar-task-manager/id_window_status
 									else
-										for bar_id in $(cat /tmp/swaybar/idb)
+										for bar_id in $(cat /tmp/swaybar/id_menu_start)
 										do 
 											swaymsg -q bar $bar_id hidden_state hide
 										done
@@ -287,8 +379,14 @@ do
 									;;
 		 *"id_time"*"event"*"272"*)
 									if [ -e /tmp/swaybar/bar-task-manager/id_time_status ] && [ "$(cat /tmp/swaybar/bar-task-manager/id_time_status)" = "off" ]; then
+										echo "off" > /tmp/swaybar/bar-task-manager/id_sys_tray_lan_status
+										for bar_id in $(cat /tmp/swaybar/id_menu_lan)
+										do 
+											swaymsg -q bar $bar_id hidden_state hide
+										done
+
 										echo "off" > /tmp/swaybar/bar-task-manager/id_sys_tray_status
-										for bar_id in $(cat /tmp/swaybar/idb_sys_tray)
+										for bar_id in $(cat /tmp/swaybar/id_menu_tray)
 										do 
 											swaymsg -q bar $bar_id hidden_state hide
 										done
@@ -303,18 +401,24 @@ do
 									;;
 		 *"id_sys_tray"*"event"*"272"*)
 									if [ -e /tmp/swaybar/bar-task-manager/id_sys_tray_status ] && [ "$(cat /tmp/swaybar/bar-task-manager/id_sys_tray_status)" = "off" ]; then
+										echo "off" > /tmp/swaybar/bar-task-manager/id_sys_tray_lan_status
+										for bar_id in $(cat /tmp/swaybar/id_menu_lan)
+										do 
+											swaymsg -q bar $bar_id hidden_state hide
+										done
+
 										echo "off" > /tmp/swaybar/bar-task-manager/id_time_status
 										swaymsg -q bar sys-tray-clock-full hidden_state hide
 
 										echo "on" > /tmp/swaybar/bar-task-manager/id_sys_tray_status
-										for bar_id in $(cat /tmp/swaybar/idb_sys_tray)
+										for bar_id in $(cat /tmp/swaybar/id_menu_tray)
 										do 
 											swaymsg -q bar $bar_id hidden_state show
 										done
 										
 									else
 										echo "off" > /tmp/swaybar/bar-task-manager/id_sys_tray_status
-										for bar_id in $(cat /tmp/swaybar/idb_sys_tray)
+										for bar_id in $(cat /tmp/swaybar/id_menu_tray)
 										do 
 											swaymsg -q bar $bar_id hidden_state hide
 										done

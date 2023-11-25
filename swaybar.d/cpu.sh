@@ -4,13 +4,15 @@ cpu_total0=0
 cpu_u0_n0_s0=0
 
 w_icon=40
-w_t=80
+w_t=60
 w_text=60
 w_p=$(( $1 - $w_t - $w_text - $w_icon ))
 
 echo '{"version": 1,"click_events": true}'
 echo '['
 echo '[]'
+
+#echo "x" > /tmp/swaybar/bar-sys-tray-cpu/t_over_70
 
 while true;
 do
@@ -58,7 +60,15 @@ do
 	echo -n "}"
 
 	echo -n ","
-
+	
+	if [ $cpu_t -gt 70 ] && [ ! -e /tmp/swaybar/bar-sys-tray-cpu/t_over_70 ]; then
+		echo "true" > /tmp/swaybar/bar-sys-tray-cpu/t_over_70
+		echo "#ff0000" >/tmp/swaybar/bar-task-manager/id-sys-tray-color
+	elif [ $cpu_t -lt 70 ] && [ -e /tmp/swaybar/bar-sys-tray-cpu/t_over_70 ]; then
+		rm -f /tmp/swaybar/bar-sys-tray-cpu/t_over_70 >/dev/null 2>&1
+		rm -f /tmp/swaybar/bar-task-manager/id-sys-tray-color >/dev/null 2>&1
+	fi
+	
 	echo -n "{"
 	echo -n "\"min_width\": $w_t,"
 	echo -n "\"separator_block_width\": 0,"

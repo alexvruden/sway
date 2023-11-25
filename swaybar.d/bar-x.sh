@@ -55,7 +55,7 @@ do
     fi
     echo -n "}"
 
-    echo "]"
+    echo -n "]"
     if [ -e /tmp/swaybar/bar-$idb/event-272 ] || [ -e /tmp/swaybar/bar-$idb/event-273 ] || [ -e /tmp/swaybar/bar-$idb/event-768 ] || [ -e /tmp/swaybar/bar-$idb/event-769 ]; then
         read -t 1 line
         case  $line  in

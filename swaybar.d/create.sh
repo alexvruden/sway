@@ -1,43 +1,101 @@
 #!/bin/bash
 
-#log="/tmp/start.log"
-log="/dev/null"
-echo " $0 : Start" >>$log
-
 sc_width=$(swaymsg -p -t get_outputs | awk '/mode:/ {print $3}' | cut -dx -f1)
 sc_heigth=$(swaymsg -p -t get_outputs | awk '/mode:/ {print $3}' | cut -dx -f2)
 
-b_height=30
-
-#i="task-manager"
-
-#echo "bar {" > /tmp/swaybar/config.d/bar-$i.conf
-#echo "    id $i" >> /tmp/swaybar/config.d/bar-$i.conf
-#echo "    workspace_buttons no" >> /tmp/swaybar/config.d/bar-$i.conf
-#echo "    height $b_height" >> /tmp/swaybar/config.d/bar-$i.conf
-#echo "    status_padding 0" >> /tmp/swaybar/config.d/bar-$i.conf
-#echo "    status_edge_padding 0" >> /tmp/swaybar/config.d/bar-$i.conf
-#echo "    position bottom" >> /tmp/swaybar/config.d/bar-$i.conf
-#echo "    status_command \"${HOME}/.config/sway/swaybar.d/start.sh\"" >> /tmp/swaybar/config.d/bar-$i.conf
-#echo "}" >> /tmp/swaybar/config.d/bar-$i.conf
-
-#if [ -e ~/.config/sway/swaybar.d/store/idb ]; then
-#	~/.config/sway/swaybar.d/manage_bar.sh -r
-#	exit 1
-#fi
 
 _bar() {
 	swaymsg bar $1 mode hide
+	swaymsg bar $1 gaps $b_top $b_right $b_bottom $b_left
+	swaymsg bar $1 height $b_height
 	swaymsg bar $1 hidden_state hide
 	swaymsg bar $1 workspace_buttons no
 	swaymsg bar $1 modifier none
-	swaymsg bar $1 height $b_height
-	swaymsg bar $1 gaps $b_top $b_right $b_bottom $b_left
 	swaymsg bar $1 status_padding 0
 	swaymsg bar $1 status_edge_padding 0
 }
 
 #-----------------------------------------------------------------------
+#-----------------------------------------------------------------------------------
+# invisible WORKSPACE PREV/NEXT
+
+# NEXT (right)
+
+b_width=5
+b_top=0
+b_bottom=30
+b_height=$(( $sc_heigth - $b_bottom ))
+b_right=0
+b_left=$(( $sc_width - $b_width ))
+
+i="w_next"
+
+swaymsg bar $i mode hide
+swaymsg bar $i gaps $b_top $b_right $b_bottom $b_left
+swaymsg bar $i height $b_height
+swaymsg bar $i hidden_state hide
+swaymsg bar $i workspace_buttons no
+swaymsg bar $i modifier none
+swaymsg bar $i status_padding 0
+swaymsg bar $i status_edge_padding 0
+swaymsg bar $i hidden_state show
+swaymsg bar $i colors focused_background "#00000000"
+swaymsg bar $i colors focused_statusline "#00000000"
+swaymsg bar $i colors focused_separator "#00000000"
+swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-i.sh next"
+
+##PREV (left)
+b_width=5
+b_top=10
+b_bottom=30
+b_left=0
+b_right=$(( $sc_width - $b_width ))
+b_height=$(( $sc_heigth - $b_bottom - $b_top ))
+
+i="w_prev"
+
+swaymsg bar $i mode hide
+swaymsg bar $i gaps $b_top $b_right $b_bottom $b_left
+swaymsg bar $i height $b_height
+swaymsg bar $i hidden_state hide
+swaymsg bar $i workspace_buttons no
+swaymsg bar $i modifier none
+swaymsg bar $i status_padding 0
+swaymsg bar $i status_edge_padding 0
+swaymsg bar $i hidden_state show
+swaymsg bar $i colors focused_background "#00000000"
+swaymsg bar $i colors focused_statusline "#00000000"
+swaymsg bar $i colors focused_separator "#00000000"
+swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-i.sh prev"
+
+## by_name (top left) - choise empty workspace
+
+b_height=5
+b_width=5
+b_top=0
+b_bottom=$(( $sc_heigth - $b_height ))
+b_left=0
+b_right=$(( $sc_width - $b_width ))
+
+i="w_by_name"
+
+swaymsg bar $i mode hide
+swaymsg bar $i gaps $b_top $b_right $b_bottom $b_left
+swaymsg bar $i height $b_height
+swaymsg bar $i hidden_state hide
+swaymsg bar $i workspace_buttons no
+swaymsg bar $i modifier none
+swaymsg bar $i status_padding 0
+swaymsg bar $i status_edge_padding 0
+swaymsg bar $i hidden_state show
+swaymsg bar $i colors focused_background "#00000000"
+swaymsg bar $i colors focused_statusline "#00000000"
+swaymsg bar $i colors focused_separator "#00000000"
+swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-i.sh by_name"
+
+#-----------------------------------------------------------------------
+#-----------------------------------------------------------------------------------
+# MENU START
 
 b_list=
 
@@ -228,6 +286,20 @@ echo "" > /tmp/swaybar/bar-$i/icon
 echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
 echo "foot -a 'log' sudo tail -f /var/log/messages" > /tmp/swaybar/bar-$i/event-272
 
+i="swaylog"
+b_list="$i $b_list"
+b_bottom=$(( $b_bottom + $b_height ))
+b_top=$(( $sc_heigth - $b_bottom - $b_height - 30 ))
+rm -rf /tmp/swaybar/bar-$i
+mkdir -p /tmp/swaybar/bar-$i
+_bar $i
+swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-x.sh $i"
+echo " swaylog" > /tmp/swaybar/bar-$i/full-text
+echo "#E4D00A" > /tmp/swaybar/bar-$i/full-text-color
+echo "" > /tmp/swaybar/bar-$i/icon
+echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
+echo "foot -a 'log' tail -f /tmp/sway.log" > /tmp/swaybar/bar-$i/event-272
+
 i="openvpn"
 b_list="$i $b_list"
 b_bottom=$(( $b_bottom + $b_height ))
@@ -256,20 +328,58 @@ echo "#088F8F" > /tmp/swaybar/bar-$i/full-text-color
 #echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
 #echo "" > /tmp/swaybar/bar-$i/event-272
 
-#-----------------------------------------------------------------------
+echo "$b_list" > /tmp/swaybar/id_menu_start
 
-echo "$b_list" > /tmp/swaybar/idb
+#-----------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------
+# MENU LAN
 
-#------------
+b_sys_tray_lan_list=
+b_height=30
+b_width=500
+
+b_bottom=5
+b_right=5
+b_left=$(( $sc_width - $b_width - $b_right ))
+b_top=$(( $sc_heigth - $b_bottom - $b_height - 30 ))
+
+i="sys-tray-inet"
+b_sys_tray_lan_list="$i $b_sys_tray_lan_list"
+b_bottom=$(( $b_bottom + $b_height ))
+b_top=$(( $sc_heigth - $b_bottom - $b_height - 30 ))
+rm -rf /tmp/swaybar/bar-$i
+mkdir -p /tmp/swaybar/bar-$i
+_bar $i
+swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/inet.sh $b_width enp4s0"
+
+i="sys-tray-vpn"
+b_sys_tray_lan_list="$i $b_sys_tray_lan_list"
+b_bottom=$(( $b_bottom + $b_height ))
+b_top=$(( $sc_heigth - $b_bottom - $b_height - 30 ))
+rm -rf /tmp/swaybar/bar-$i
+mkdir -p /tmp/swaybar/bar-$i
+_bar $i
+swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/inet.sh $b_width tun0"
+
+i="sys-tray-wlan"
+b_sys_tray_lan_list="$i $b_sys_tray_lan_list"
+b_bottom=$(( $b_bottom + $b_height ))
+b_top=$(( $sc_heigth - $b_bottom - $b_height - 30 ))
+rm -rf /tmp/swaybar/bar-$i
+mkdir -p /tmp/swaybar/bar-$i
+_bar $i
+swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/inet.sh $b_width wlan0"
+
+echo "$b_sys_tray_lan_list" > /tmp/swaybar/id_menu_lan
+
+#-----------------------------------------------------------------------------------
+# MENU TRAY
 
 b_sys_tray_list=
 b_height=30
-b_width=400
-
-#b_bottom=$(( $b_height + 5 ))
+b_width=200
 
 b_bottom=5
-#b_top=0
 b_right=5
 b_left=$(( $sc_width - $b_width - $b_right ))
 b_top=$(( $sc_heigth - $b_bottom - $b_height - 30 ))
@@ -292,15 +402,6 @@ mkdir -p /tmp/swaybar/bar-$i
 _bar $i
 swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/mem.sh $b_width"
 
-i="sys-tray-inet"
-b_sys_tray_list="$i $b_sys_tray_list"
-b_bottom=$(( $b_bottom + $b_height ))
-b_top=$(( $sc_heigth - $b_bottom - $b_height - 30 ))
-rm -rf /tmp/swaybar/bar-$i
-mkdir -p /tmp/swaybar/bar-$i
-_bar $i
-swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/inet.sh $b_width"
-
 i="sys-tray-lang"
 b_sys_tray_list="$i $b_sys_tray_list"
 b_bottom=$(( $b_bottom + $b_height ))
@@ -309,15 +410,6 @@ rm -rf /tmp/swaybar/bar-$i
 mkdir -p /tmp/swaybar/bar-$i
 _bar $i
 swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/lang.sh $b_width"
-
-i="sys-tray-vpn"
-b_sys_tray_list="$i $b_sys_tray_list"
-b_bottom=$(( $b_bottom + $b_height ))
-b_top=$(( $sc_heigth - $b_bottom - $b_height - 30 ))
-rm -rf /tmp/swaybar/bar-$i
-mkdir -p /tmp/swaybar/bar-$i
-_bar $i
-swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/vpn.sh $b_width"
 
 i="sys-tray-audio"
 b_sys_tray_list="$i $b_sys_tray_list"
@@ -328,8 +420,11 @@ mkdir -p /tmp/swaybar/bar-$i
 _bar $i
 swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/audio.sh $b_width"
 
-i="sys-tray-clock-full"
+echo "$b_sys_tray_list" > /tmp/swaybar/id_menu_tray
 
+#-----------------------------------------------------------------------------------
+# MENU DATE
+i="sys-tray-clock-full"
 b_height=30
 b_width=500
 #b_top=0
@@ -343,8 +438,5 @@ mkdir -p /tmp/swaybar/bar-$i
 _bar $i
 swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/full_time.sh 500"
 
-echo "$b_sys_tray_list" > /tmp/swaybar/idb_sys_tray
 
-echo " $0 : goto bar-colors.sh" >>$log
 ~/.config/sway/swaybar.d/bar-colors.sh "my-colors" >/dev/null 2>&1
-echo " $0 : end" >>$log
