@@ -12,6 +12,8 @@ w_rx=60
 w_s=$(( $1 - $w_t - $w_tx - $w_rx - $w_icon ))
 w_speed=$(( $w_s / 2 ))
 
+echo "x" > /tmp/swaybar/bar-task-manager/${iface}_status
+
 echo '{"version": 1,"click_events": true}'
 echo '['
 echo '[]'
@@ -28,7 +30,7 @@ do
 			echo "con" > /tmp/swaybar/bar-task-manager/${iface}_status
 		else
 			iface_inet="false"
-			echo "nocon" > /tmp/swaybar/bar-task-manager/${iface}_status
+			if [ "$(cat /tmp/swaybar/bar-task-manager/${iface}_status)" != "wait" ]; then echo "nocon" > /tmp/swaybar/bar-task-manager/${iface}_status; fi
 		fi
 	fi
 
@@ -38,7 +40,7 @@ do
 		echo "up" > /tmp/swaybar/bar-task-manager/${iface}_status
 	else
 		iface_on_off="off"
-		echo "down" > /tmp/swaybar/bar-task-manager/${iface}_status
+		if [ "$(cat /tmp/swaybar/bar-task-manager/${iface}_status)" != "wait" ]; then echo "down" > /tmp/swaybar/bar-task-manager/${iface}_status; fi
 	fi
 	
 	cat /proc/net/dev | grep -q $iface >/dev/null 2>&1
@@ -59,9 +61,9 @@ do
 	prev_tx=$curr_tx
 	
 	echo -n "{"
-	if [ "$(cat /tmp/swaybar/bar-task-manager/${iface}_status)" != "wait" ]; then
+	#if [ "$(cat /tmp/swaybar/bar-task-manager/${iface}_status)" != "wait" ]; then
 		echo -n "\"name\":\"id_iface\","
-	fi
+	#fi
 	echo -n "\"separator\":true,"
 	echo -n "\"separator_block_width\": 0,"
 	echo -n "\"min_width\": $w_icon,"
@@ -85,9 +87,9 @@ do
 	echo -n ","
 	
 	echo -n "{"
-	if [ "$(cat /tmp/swaybar/bar-task-manager/${iface}_status)" != "wait" ]; then
+	#if [ "$(cat /tmp/swaybar/bar-task-manager/${iface}_status)" != "wait" ]; then
 		echo -n "\"name\":\"id_iface\","
-	fi
+	#fi
 	echo -n "\"separator\": false,"
 	echo -n "\"separator_block_width\": 0,"
 	echo -n "\"align\": \"left\","
@@ -126,13 +128,17 @@ do
 	echo -n "\"separator_block_width\": 0,"
 	echo -n "\"align\": \"left\","
 	echo -n "\"min_width\": $w_rx,"
-	if [ "$iface_on_off" = "off" ]; then
-		echo -n "\"full_text\":\" down\""
+	if [ "$(cat /tmp/swaybar/bar-task-manager/${iface}_status)" = "wait" ]; then
+		echo -n "\"full_text\":\" \""
 	else
-		if [ "$iface_inet" = "false" ]; then 
-			echo -n "\"full_text\":\" not\""
+		if [ "$iface_on_off" = "off" ]; then
+			echo -n "\"full_text\":\" down\""
 		else
-			echo -n "\"full_text\":\" RX: [\""
+			if [ "$iface_inet" = "false" ]; then 
+				echo -n "\"full_text\":\" not\""
+			else
+				echo -n "\"full_text\":\" RX: [\""
+			fi
 		fi
 	fi
 	echo -n "}"
@@ -143,16 +149,20 @@ do
 	echo -n "\"separator_block_width\": 0,"
 	echo -n "\"separator\": false,"
 	echo -n "\"min_width\": $w_speed,"
-	if [ "$iface_on_off" = "off" ]; then
-		echo -n "\"align\": \"right\","
-		echo -n "\"full_text\":\" \""
+	if [ "$(cat /tmp/swaybar/bar-task-manager/${iface}_status)" = "wait" ]; then
+		echo -n "\"full_text\":\" waiting...\""
 	else
-		if [ "$iface_inet" = "false" ]; then 
-			echo -n "\"align\": \"left\","
-			echo -n "\"full_text\":\"connected \""
-		else
+		if [ "$iface_on_off" = "off" ]; then
 			echo -n "\"align\": \"right\","
-			echo -n "\"full_text\":\"$speed_rx KiB] \""
+			echo -n "\"full_text\":\" \""
+		else
+			if [ "$iface_inet" = "false" ]; then 
+				echo -n "\"align\": \"left\","
+				echo -n "\"full_text\":\"connected \""
+			else
+				echo -n "\"align\": \"right\","
+				echo -n "\"full_text\":\"$speed_rx KiB] \""
+			fi
 		fi
 	fi
 	echo -n "}"
@@ -198,33 +208,39 @@ do
 	case  $line  in
 		*"id_iface"*"event"*"272"*) 
 								if [ "$iface" = "tun0" ]; then
-									if [ -e /tmp/swaybar/bar-task-manager/${iface}_status ] && [ "$(cat /tmp/swaybar/bar-task-manager/${iface}_status)" = "down" ] && [ "$(cat /tmp/swaybar/bar-task-manager/${iface}_status)" != "wait" ]; then
-										swaymsg -q exec 'sudo rc-service openvpn start' >/dev/null 2>&1
-									elif [ -e /tmp/swaybar/bar-task-manager/${iface}_status ] && [ "$(cat /tmp/swaybar/bar-task-manager/${iface}_status)" != "down" ] && [ "$(cat /tmp/swaybar/bar-task-manager/${iface}_status)" != "wait" ]; then
-										swaymsg -q exec 'sudo rc-service openvpn stop' >/dev/null 2>&1
-									fi
-									echo "wait" > /tmp/swaybar/bar-task-manager/${iface}_status
+									swaymsg -q exec 'foot -T "Starting OpenVPN" ~/.config/sway/swaybar.d/ovpn.sh'
+#									echo "wait" > /tmp/swaybar/bar-task-manager/${iface}_status
 								elif [ "$iface" = "wlan0" ]; then
-									if [ -e /tmp/swaybar/bar-task-manager/${iface}_status ] && [ "$(cat /tmp/swaybar/bar-task-manager/${iface}_status)" = "down" ] && [ "$(cat /tmp/swaybar/bar-task-manager/${iface}_status)" != "wait" ]; then
-										if [ ! -L /etc/init.d/net.${iface} ]; then
-											sudo ln -s /etc/init.d/net.lo /etc/init.d/net.${iface} >/dev/null 2>&1
-										fi
-										swaymsg -q exec 'sudo /etc/init.d/net.wlan0 start' >/dev/null 2>&1
-									elif [ -e /tmp/swaybar/bar-task-manager/${iface}_status ] && [ "$(cat /tmp/swaybar/bar-task-manager/${iface}_status)" != "down" ] && [ "$(cat /tmp/swaybar/bar-task-manager/${iface}_status)" != "wait" ]; then
-										swaymsg -q exec 'sudo /etc/init.d/net.wlan0 stop' >/dev/null 2>&1
-										while ifconfig | grep -q wlan0; do sleep 1s; done
-										if [ -L /etc/init.d/net.wlan0 ]; then
-											sudo rm -f /etc/init.d/net.wlan0 >/dev/null 2>&1
-										fi
+									if [ ! -L /etc/init.d/net.${iface} ]; then
+										sudo ln -s /etc/init.d/net.lo /etc/init.d/net.${iface} >/dev/null 2>&1
 									fi
+									swaymsg -q exec 'sudo /etc/init.d/net.wlan0 start' >/dev/null 2>&1
 									echo "wait" > /tmp/swaybar/bar-task-manager/${iface}_status
 								elif [ "$iface" = "enp4s0" ]; then
-									if [ -e /tmp/swaybar/bar-task-manager/${iface}_status ] && [ "$(cat /tmp/swaybar/bar-task-manager/${iface}_status)" = "down" ] && [ "$(cat /tmp/swaybar/bar-task-manager/${iface}_status)" != "wait" ]; then
-										swaymsg -q exec 'sudo ifconfig enp4s0 up'
-									elif [ -e /tmp/swaybar/bar-task-manager/${iface}_status ] && [ "$(cat /tmp/swaybar/bar-task-manager/${iface}_status)" != "down" ] && [ "$(cat /tmp/swaybar/bar-task-manager/${iface}_status)" != "wait" ]; then
-										swaymsg -q exec 'sudo ifconfig enp4s0 down'
+									swaymsg -q exec 'sudo ifconfig enp4s0 up'
+									echo "wait" > /tmp/swaybar/bar-task-manager/${ifacSe}_status
+								fi
+								;;
+		*"id_iface"*"event"*"273"*) 
+								if [ "$iface" = "tun0" ]; then
+									for file in /run/openvpn.*; do
+										ff=${file##*/}
+										ff=${ff%.*}
+									done
+									if [ ${ff} ]; then
+										swaymsg -q exec "sudo /etc/init.d/${ff} stop" >/dev/null 2>&1
+										echo "down" > /tmp/swaybar/bar-task-manager/${iface}_status
 									fi
-									echo "wait" > /tmp/swaybar/bar-task-manager/${iface}_status
+								elif [ "$iface" = "wlan0" ]; then
+									swaymsg -q exec 'sudo /etc/init.d/net.wlan0 stop' >/dev/null 2>&1
+									while ifconfig | grep -q wlan0; do sleep 1s; done
+									if [ -L /etc/init.d/net.wlan0 ]; then
+										sudo rm -f /etc/init.d/net.wlan0 >/dev/null 2>&1
+									fi
+									echo "down" > /tmp/swaybar/bar-task-manager/${iface}_status
+								elif [ "$iface" = "enp4s0" ]; then
+									swaymsg -q exec 'sudo ifconfig enp4s0 down'
+									echo "down" > /tmp/swaybar/bar-task-manager/${iface}_status
 								fi
 								;;
 	esac

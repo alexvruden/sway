@@ -140,13 +140,13 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 for_window [title="."] title_format " %title : %app_id"
+for_window [title="."] floating enable
 
-for_window [app_id = "floating"] floating enable
+#for_window [app_id = "floating"] floating enable
 for_window [app_id = "floating_update"] floating enable, resize set width 1000px height 600px
 
-for_window [title = "Administrator privileges required"] floating enable
-
-for_window [app_id = "foot"] floating enable
+#for_window [title = "Administrator privileges required"] floating enable
+#for_window [app_id = "foot"] floating enable
 
 for_window [app_id="firefox" title="Library"] floating enable, border pixel 3, sticky enable
 
@@ -172,5 +172,7 @@ for_window [app_id="torrent"] move container to workspace $wsp9; focus
 for_window [app_id="cpu"] move to workspace $wsp10; focus
 
 bindsym control+shift+escape exec $term -a 'cpu' htop
+
+workspace $wsp1
 
 #include config.d/*

@@ -61,6 +61,7 @@ echo '{"version": 1,"click_events": true}'
 echo '['
 echo '[]'
 
+
 while true;
 do
 	swaymsg -p -t get_tree >/tmp/get_tree

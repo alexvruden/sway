@@ -183,6 +183,20 @@ echo "" > /tmp/swaybar/bar-$i/icon
 echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
 echo "firefox" > /tmp/swaybar/bar-$i/event-272
 
+i="chromium"
+b_list="$i $b_list"
+b_bottom=$(( $b_bottom + $b_height ))
+b_top=$(( $sc_heigth - $b_bottom - $b_height - 30 ))
+rm -rf /tmp/swaybar/bar-$i
+mkdir -p /tmp/swaybar/bar-$i
+_bar $i
+swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-x.sh $i"
+echo " Chromium" > /tmp/swaybar/bar-$i/full-text
+echo "#FFFFFF" > /tmp/swaybar/bar-$i/full-text-color
+echo "" > /tmp/swaybar/bar-$i/icon
+echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
+echo "chromium" > /tmp/swaybar/bar-$i/event-272
+
 i="torrent"
 b_list="$i $b_list"
 b_bottom=$(( $b_bottom + $b_height ))
@@ -192,11 +206,13 @@ mkdir -p /tmp/swaybar/bar-$i
 _bar $i
 swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-x.sh $i"
 echo " Torrent" > /tmp/swaybar/bar-$i/full-text
+echo "transmission-daemon" > /tmp/swaybar/bar-$i/only-one-instance
 echo "#FFFFFF" > /tmp/swaybar/bar-$i/full-text-color
 echo "" > /tmp/swaybar/bar-$i/icon
 echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
 echo "transmission-daemon" > /tmp/swaybar/bar-$i/event-272
-echo "transmission-remote --exit" > /tmp/swaybar/bar-$i/event-273
+echo "pkill -3 -f transmission-daemon" > /tmp/swaybar/bar-$i/event-273
+#echo "transmission-remote --exit" > /tmp/swaybar/bar-$i/event-273
 
 i="group-internet"
 b_list="$i $b_list"
@@ -223,6 +239,7 @@ mkdir -p /tmp/swaybar/bar-$i
 _bar $i
 swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-x.sh $i"
 echo " Commander" > /tmp/swaybar/bar-$i/full-text
+echo "mc" > /tmp/swaybar/bar-$i/only-one-instance
 echo "#FFFFFF" > /tmp/swaybar/bar-$i/full-text-color
 echo "" > /tmp/swaybar/bar-$i/icon
 echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
@@ -251,6 +268,7 @@ mkdir -p /tmp/swaybar/bar-$i
 _bar $i
 swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-x.sh $i"
 echo " Geany" > /tmp/swaybar/bar-$i/full-text
+echo "geany" > /tmp/swaybar/bar-$i/only-one-instance
 echo "#FFFFFF" > /tmp/swaybar/bar-$i/full-text-color
 echo "" > /tmp/swaybar/bar-$i/icon
 echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
@@ -271,6 +289,20 @@ echo "#088F8F" > /tmp/swaybar/bar-$i/full-text-color
 #echo "" > /tmp/swaybar/bar-$i/event-272
 
 #-----------------------------------------------------------------------
+
+i="emerge-fetch"
+b_list="$i $b_list"
+b_bottom=$(( $b_bottom + $b_height ))
+b_top=$(( $sc_heigth - $b_bottom - $b_height - 30 ))
+rm -rf /tmp/swaybar/bar-$i
+mkdir -p /tmp/swaybar/bar-$i
+_bar $i
+swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-x.sh $i"
+echo " emerge-fetch" > /tmp/swaybar/bar-$i/full-text
+echo "#E4D00A" > /tmp/swaybar/bar-$i/full-text-color
+echo "" > /tmp/swaybar/bar-$i/icon
+echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
+echo "foot -a 'log' sudo tail -f /var/log/emerge-fetch.log" > /tmp/swaybar/bar-$i/event-272
 
 i="syslog"
 b_list="$i $b_list"
@@ -312,7 +344,7 @@ echo " openvpn" > /tmp/swaybar/bar-$i/full-text
 echo "#E4D00A" > /tmp/swaybar/bar-$i/full-text-color
 echo "" > /tmp/swaybar/bar-$i/icon
 echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
-echo "foot -a 'log' tail -f /var/log/openvpn-client.log" > /tmp/swaybar/bar-$i/event-272
+echo "foot -a 'log' sudo tail -f /tmp/openvpn-client.log" > /tmp/swaybar/bar-$i/event-272
 
 i="group-logs"
 b_list="$i $b_list"
