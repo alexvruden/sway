@@ -84,7 +84,7 @@ do
 	read -t 1 line
 	case  $line  in
 		*"id_cpu"*"event"*"272"*) 
-									swaymsg -q exec 'foot -a "cpu" htop' 
+									swaymsg -q exec 'foot -T "htop" -a "cpu" htop' 
 									;;
 	esac
 done

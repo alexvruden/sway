@@ -1,5 +1,9 @@
 
 # config for sway
+
+#exec dbus-update-activation-environment I3SOCK SWAYSOCK DISPLAY WAYLAND_DISPLAY XDG_SESSION_DESKTOP XDG_SESSION_TYPE XDG_CURRENT_DESKTOP
+#exec dbus-update-activation-environment --systemd --all
+
 #
 # Logo key. Use Mod1 for Alt.
 set $mod Mod4
@@ -13,7 +17,6 @@ set $right l
 include ${HOME}/.config/sway/workspaces.d/*
 
 seat seat0 {
-
 	xcursor_theme gentoo 24
 	#hide_cursor 1000
 }
@@ -23,11 +26,12 @@ set $term foot
 
 font pango:monospace 10
 
-output HDMI-A-1 resolution 2560x1440 position 2560,0
-
-output * bg ${HOME}/.config/sway/sway.png fill
-
-exec swayidle -w timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"'
+output HDMI-A-1 {
+	resolution 2560x1440
+	position 2560,0
+	#background ${HOME}/.config/sway/sway.png fill
+	background #000000 solid_color
+}
 
 input "10077:2982:USB_OPTICAL_MOUSE" {
 	events enabled
@@ -48,10 +52,6 @@ input "49396:1216:SZH_usb_keyboard" {
 	#repeat_rate 5
 }
 
-floating_modifier $mod normal
-    
-focus_follows_mouse no
-
 bar {
     id task-manager
     workspace_buttons no
@@ -62,6 +62,9 @@ bar {
     position bottom
     status_command "~/.config/sway/swaybar.d/start.sh"
 }
+
+floating_modifier $mod normal
+focus_follows_mouse no
 
 bindsym {
 
@@ -152,6 +155,7 @@ for_window [app_id="firefox" title="Library"] floating enable, border pixel 3, s
 
 
 for_window [app_id="geany"] move container to workspace $wsp1; focus; floating enable
+for_window [app_id="foot-welcome"] move container to workspace $wsp1; focus
 
 for_window [app_id="firefox"] move container to workspace $wsp2; focus; floating enable
 for_window [app_id="internet"] move container to workspace $wsp2; focus
@@ -166,13 +170,19 @@ for_window [app_id="games"] move container to workspace $wsp5; focus
 for_window [app_id="log"] move container to workspace $wsp7; focus; floating enable
 
 for_window [app_id="commander"] move container to workspace $wsp8; focus; floating enable, resize set width 2000px height 1000px
+for_window [app_id="mc"] move container to workspace $wsp8; focus; floating enable, resize set width 2000px height 1000px
 
 for_window [app_id="torrent"] move container to workspace $wsp9; focus
 
 for_window [app_id="cpu"] move to workspace $wsp10; focus
 
-bindsym control+shift+escape exec $term -a 'cpu' htop
+bindsym control+shift+escape exec $term -T 'htop' -a 'cpu' htop
 
-workspace $wsp1
+exec foot -a 'foot-welcome'
+exec swayidle -w timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"'
+
+#exec gentoo-pipewire-launcher &
+#exec --no-startup-id /usr/libexec/xdg-desktop-portal-wlr -r &
+#exec /usr/libexec/xdg-desktop-portal-wlr -r &
 
 #include config.d/*

@@ -6,7 +6,29 @@ s=1
 ovpn_str=
 echo "wait" > /tmp/swaybar/bar-task-manager/tun0_status
 
-echo "Choise OVPN:" >/tmp/ovpn
+stop_vpn() {
+	for file in /run/openvpn.*; do
+#		ff=${file##*/}
+#		ff=${ff%.*}
+		file=${file##*/}
+		file=${file%.*}
+	done
+	
+	if [ "$file" != "openvpn" ]; then
+		echo "Stop VPN /etc/init.d/$file"
+		sudo /etc/init.d/$file stop
+		echo "down" > /tmp/swaybar/bar-task-manager/tun0_status
+	fi
+	echo "Exit."
+	sleep 10s
+}
+
+if [ -e /tmp/ovpn ]; then
+	rm -f /tmp/ovpn
+fi
+
+echo "Find ovpn-file in ~/.config/openvpn/"
+echo ""
 for file in ~/.config/openvpn/*.ovpn; do
 	if [ -f $file ]; then
 		ovpn_str="${ovpn_str} $file"
@@ -26,24 +48,30 @@ for folder in `ls ~/.config/openvpn/ | tr -s '\n' ' '`; do
 		done
 	fi
 done
-echo "" >>/tmp/ovpn
-
 cat /tmp/ovpn
-read -p "[?]: " line
+echo ""
+read -p "Choise VPN: " line
+
 if [ ! $line ]; then 
 	echo "down" > /tmp/swaybar/bar-task-manager/tun0_status
+	stop_vpn
 	exit 1
 fi
-c=$(( $line + 1 ))
-govpn="$(echo "${ovpn_str}" | cut -d' ' -f$c)"
+(( line++ ))
+govpn="$(echo "${ovpn_str}" | cut -d' ' -f$line)"
+
 if [ ! $govpn ]; then
 	echo "down" > /tmp/swaybar/bar-task-manager/tun0_status
+	stop_vpn
 	exit 1
 fi
 if [ ! -f $govpn ]; then
 	echo "down" > /tmp/swaybar/bar-task-manager/tun0_status
+	stop_vpn
 	exit 1
 fi
+echo ""
+echo "Use VPN: $govpn"
 p=$govpn
 
 p1=${p%/*}
@@ -58,6 +86,7 @@ echo ""
 echo "Enter UserName and Password, or empty:"
 read -p "UserName [$exist_usname]: " usnam
 read -p "Password [$exist_upass]: " upass
+echo ""
 if [ $usnam ]; then 
 	echo "$usnam" > /tmp/auth 
 else
@@ -87,13 +116,17 @@ if [ -L /etc/openvpn/$n.conf ]; then
 fi
 
 if [ ! -L /etc/openvpn/$n.conf ]; then
+	echo "Create /etc/openvpn/$n.conf"
 	sudo ln -s $p.edited /etc/openvpn/$n.conf
 fi
 
 sudo rm -f /etc/init.d/openvpn.*
 
 if [ -L /etc/openvpn/$n.conf ]; then
+	echo "Create /etc/init.d/openvpn.$n"
 	sudo ln -s /etc/init.d/openvpn /etc/init.d/openvpn.$n >/dev/null 2>&1
-	sudo /etc/init.d/openvpn.$n start
+	sudo /etc/init.d/openvpn.$n restart
 fi
 #sudo tail -f /tmp/openvpn-client.log
+echo "Exit."
+sleep 10s

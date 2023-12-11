@@ -16,10 +16,14 @@ do
     echo -n "{"
     if [ -e /tmp/swaybar/bar-$idb/full-text-color ]; then
         echo -n "\"color\":\"$(cat /tmp/swaybar/bar-$idb/full-text-color)\","
+	else
+		echo -n "\"color\":\"$(cat /tmp/swaybar/color-theme/current/body-bar-color/color)\","
     fi
-#    if [ -e /tmp/swaybar/bar-$idb/full-text-background-color ]; then
-#        echo -n "\"background\":\"$(cat /tmp/swaybar/bar-$idb/full-text-background-color)\","
-#    fi
+    if [ -e /tmp/swaybar/bar-$idb/full-text-background-color ]; then
+        echo -n "\"background\":\"$(cat /tmp/swaybar/bar-$idb/full-text-background-color)\","
+ 	else
+		echo -n "\"background\":\"$(cat /tmp/swaybar/color-theme/current/body-bar-color/background)\","
+   fi
     echo -n "\"name\":\"id_bar_$idb\","
     echo -n "\"separator\": false,"
     echo -n "\"separator_block_width\": 0,"

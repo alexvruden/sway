@@ -15,13 +15,18 @@ echo '[]'
 while true;
 do
     echo -n ",["
-    if [ -f /tmp/swaybar/bar-$idb/icon ] && [ "$(cat /tmp/swaybar/bar-$idb/icon)" != "" ]; then
+    if [ -e /tmp/swaybar/bar-$idb/icon ] && [ "$(cat /tmp/swaybar/bar-$idb/icon)" != "" ]; then
         echo -n "{"
-        if [ -f /tmp/swaybar/bar-$idb/icon-color ]; then
+        if [ -e /tmp/swaybar/bar-$idb/icon-color ]; then
             echo -n "\"color\":\"$(cat /tmp/swaybar/bar-$idb/icon-color)\","
+        else
+            echo -n "\"color\":\"$(cat /tmp/swaybar/color-theme/current/body-bar-color/color)\","
         fi
-        if [ -f /tmp/swaybar/bar-$idb/icon-background-color ]; then
+        
+        if [ -e /tmp/swaybar/bar-$idb/icon-background-color ]; then
             echo -n "\"background\":\"$(cat /tmp/swaybar/bar-$idb/icon-background-color)\","
+		else
+			echo -n "\"background\":\"$(cat /tmp/swaybar/color-theme/current/body-bar-color/background)\","
         fi
         echo -n "\"separator\":true,"
         echo -n "\"separator_block_width\": 0,"
@@ -32,11 +37,15 @@ do
         echo -n ","
     fi
     echo -n "{"
-    if [ -f /tmp/swaybar/bar-$idb/full-text-color ]; then
+    if [ -e /tmp/swaybar/bar-$idb/full-text-color ]; then
         echo -n "\"color\":\"$(cat /tmp/swaybar/bar-$idb/full-text-color)\","
+	else
+		echo -n "\"color\":\"$(cat /tmp/swaybar/color-theme/current/body-bar-color/color)\","
     fi
-    if [ -f /tmp/swaybar/bar-$idb/full-text-background-color ]; then
+    if [ -e /tmp/swaybar/bar-$idb/full-text-background-color ]; then
         echo -n "\"background\":\"$(cat /tmp/swaybar/bar-$idb/full-text-background-color)\","
+	else
+		echo -n "\"background\":\"$(cat /tmp/swaybar/color-theme/current/body-bar-color/background)\","
     fi
     echo -n "\"name\":\"id_bar_$idb\","
     echo -n "\"separator\": false,"
@@ -93,6 +102,6 @@ do
                 ;;
         esac
     else
-        sleep 7d
+        sleep 1s
     fi
 done

@@ -32,7 +32,7 @@ while true; do
 		swaymsg -q bar scratch-window-$i status_padding 0
 		swaymsg -q bar scratch-window-$i status_edge_padding 0
 		swaymsg -q bar scratch-window-$i status_command "${HOME}/.config/sway/swaybar.d/bar-scratch-x.sh scratch-window-$i $scratch_width"
-		~/.config/sway/swaybar.d/bar-colors.sh "my-colors" "scratch-window-$i" >/dev/null 2>&1
+		~/.config/sway/swaybar.d/bar-colors.sh "my" "scratch-window-$i" >/dev/null 2>&1
 	done
 	sleep 1s
 done

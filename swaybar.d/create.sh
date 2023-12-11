@@ -14,7 +14,25 @@ _bar() {
 	swaymsg bar $1 status_padding 0
 	swaymsg bar $1 status_edge_padding 0
 }
-
+body_bar() {
+	echo '"full_text": "full_text",' > $1/full-text
+	echo '"short_text": "short_text",' > $1/short-text
+	echo '"color": "#ccccccff",' > $1/color
+	echo '"background": "#111111ff",' > $1/background
+	echo '"border": "#222222ff",' > $1/border
+	echo '"border_top": 1,' > $1/border-top
+	echo '"border_bottom": 1,' > $1/border-bottom
+	echo '"border_left": 1,' > $1/border-left
+	echo '"border_right": 1,' > $1/border-right
+	echo '"min_width": 100,' > $1/min-width
+	echo '"align": "center",' > $1/align
+	echo '"name": "id_name",' > $1/name
+	echo '"instance": "hinstance",' > $1/instance
+	echo '"urgent": false,' > $1/urgent
+	echo '"separator": true,' > $1/separator
+	echo '"separator_block_width": 5,' > $1/separator-block-width
+	echo '"markup": "none",' > $1/markup
+}
 #-----------------------------------------------------------------------
 #-----------------------------------------------------------------------------------
 # invisible WORKSPACE PREV/NEXT
@@ -120,9 +138,7 @@ mkdir -p /tmp/swaybar/bar-$i
 _bar $i
 swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-x.sh $i"
 echo " Log Out" > /tmp/swaybar/bar-$i/full-text
-echo "#FFFFFF" > /tmp/swaybar/bar-$i/full-text-color
 echo "" > /tmp/swaybar/bar-$i/icon
-echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
 echo "sway exit" > /tmp/swaybar/bar-$i/event-272
 
 i="reboot"
@@ -134,9 +150,7 @@ mkdir -p /tmp/swaybar/bar-$i
 _bar $i
 swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-x.sh $i"
 echo " Reboot" > /tmp/swaybar/bar-$i/full-text
-echo "#FFFFFF" > /tmp/swaybar/bar-$i/full-text-color
 echo "" > /tmp/swaybar/bar-$i/icon
-echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
 echo "foot sudo reboot" > /tmp/swaybar/bar-$i/event-272
 
 i="poweroff"
@@ -148,9 +162,9 @@ mkdir -p /tmp/swaybar/bar-$i
 _bar $i
 swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-x.sh $i"
 echo " Poweroff" > /tmp/swaybar/bar-$i/full-text
-echo "#FFFFFF" > /tmp/swaybar/bar-$i/full-text-color
 echo "" > /tmp/swaybar/bar-$i/icon
-echo "#FF0000" > /tmp/swaybar/bar-$i/icon-color
+ln -s /tmp/swaybar/color-theme/rgb/red /tmp/swaybar/bar-$i/icon-color
+
 echo "foot sudo poweroff" > /tmp/swaybar/bar-$i/event-272
 
 i="group-system"
@@ -162,10 +176,7 @@ mkdir -p /tmp/swaybar/bar-$i
 _bar $i
 swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-x.sh $i"
 echo "-= System =-" > /tmp/swaybar/bar-$i/full-text
-echo "#088F8F" > /tmp/swaybar/bar-$i/full-text-color
-#echo "i" > /tmp/swaybar/bar-$i/icon
-#echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
-#echo "" > /tmp/swaybar/bar-$i/event-272
+ln -s  /tmp/swaybar/color-theme/other/group-color /tmp/swaybar/bar-$i/full-text-color
 
 #-----------------------------------------------------------------------
 
@@ -178,9 +189,7 @@ mkdir -p /tmp/swaybar/bar-$i
 _bar $i
 swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-x.sh $i"
 echo " Firefox" > /tmp/swaybar/bar-$i/full-text
-echo "#FFFFFF" > /tmp/swaybar/bar-$i/full-text-color
 echo "" > /tmp/swaybar/bar-$i/icon
-echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
 echo "firefox" > /tmp/swaybar/bar-$i/event-272
 
 i="chromium"
@@ -192,9 +201,7 @@ mkdir -p /tmp/swaybar/bar-$i
 _bar $i
 swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-x.sh $i"
 echo " Chromium" > /tmp/swaybar/bar-$i/full-text
-echo "#FFFFFF" > /tmp/swaybar/bar-$i/full-text-color
 echo "" > /tmp/swaybar/bar-$i/icon
-echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
 echo "chromium" > /tmp/swaybar/bar-$i/event-272
 
 i="torrent"
@@ -207,9 +214,7 @@ _bar $i
 swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-x.sh $i"
 echo " Torrent" > /tmp/swaybar/bar-$i/full-text
 echo "transmission-daemon" > /tmp/swaybar/bar-$i/only-one-instance
-echo "#FFFFFF" > /tmp/swaybar/bar-$i/full-text-color
 echo "" > /tmp/swaybar/bar-$i/icon
-echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
 echo "transmission-daemon" > /tmp/swaybar/bar-$i/event-272
 echo "pkill -3 -f transmission-daemon" > /tmp/swaybar/bar-$i/event-273
 #echo "transmission-remote --exit" > /tmp/swaybar/bar-$i/event-273
@@ -223,10 +228,7 @@ mkdir -p /tmp/swaybar/bar-$i
 _bar $i
 swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-x.sh $i"
 echo "-= Internet =-" > /tmp/swaybar/bar-$i/full-text
-echo "#088F8F" > /tmp/swaybar/bar-$i/full-text-color
-#echo "" > /tmp/swaybar/bar-$i/icon
-#echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
-#echo "" > /tmp/swaybar/bar-$i/event-272
+ln -s  /tmp/swaybar/color-theme/other/group-color /tmp/swaybar/bar-$i/full-text-color
 
 #-----------------------------------------------------------------------
 
@@ -240,9 +242,7 @@ _bar $i
 swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-x.sh $i"
 echo " Commander" > /tmp/swaybar/bar-$i/full-text
 echo "mc" > /tmp/swaybar/bar-$i/only-one-instance
-echo "#FFFFFF" > /tmp/swaybar/bar-$i/full-text-color
 echo "" > /tmp/swaybar/bar-$i/icon
-echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
 echo "foot -a 'commander' mc" > /tmp/swaybar/bar-$i/event-272
 
 i="bash"
@@ -252,11 +252,10 @@ b_top=$(( $sc_heigth - $b_bottom - $b_height - 30 ))
 rm -rf /tmp/swaybar/bar-$i
 mkdir -p /tmp/swaybar/bar-$i
 _bar $i
+body_bar "/tmp/swaybar/bar-$i"
 swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-x.sh $i"
 echo " Foot" > /tmp/swaybar/bar-$i/full-text
-echo "#FFFFFF" > /tmp/swaybar/bar-$i/full-text-color
 echo "" > /tmp/swaybar/bar-$i/icon
-echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
 echo "foot" > /tmp/swaybar/bar-$i/event-272
 
 i="geany"
@@ -269,9 +268,7 @@ _bar $i
 swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-x.sh $i"
 echo " Geany" > /tmp/swaybar/bar-$i/full-text
 echo "geany" > /tmp/swaybar/bar-$i/only-one-instance
-echo "#FFFFFF" > /tmp/swaybar/bar-$i/full-text-color
 echo "" > /tmp/swaybar/bar-$i/icon
-echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
 echo "geany" > /tmp/swaybar/bar-$i/event-272
 
 i="group-tools"
@@ -283,10 +280,7 @@ mkdir -p /tmp/swaybar/bar-$i
 _bar $i
 swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-x.sh $i"
 echo "-= Tools =-" > /tmp/swaybar/bar-$i/full-text
-echo "#088F8F" > /tmp/swaybar/bar-$i/full-text-color
-#echo "" > /tmp/swaybar/bar-$i/icon
-#echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
-#echo "" > /tmp/swaybar/bar-$i/event-272
+ln -s  /tmp/swaybar/color-theme/other/group-color /tmp/swaybar/bar-$i/full-text-color
 
 #-----------------------------------------------------------------------
 
@@ -299,9 +293,8 @@ mkdir -p /tmp/swaybar/bar-$i
 _bar $i
 swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-x.sh $i"
 echo " emerge-fetch" > /tmp/swaybar/bar-$i/full-text
-echo "#E4D00A" > /tmp/swaybar/bar-$i/full-text-color
+ln -s  /tmp/swaybar/color-theme/other/log-color /tmp/swaybar/bar-$i/full-text-color
 echo "" > /tmp/swaybar/bar-$i/icon
-echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
 echo "foot -a 'log' sudo tail -f /var/log/emerge-fetch.log" > /tmp/swaybar/bar-$i/event-272
 
 i="syslog"
@@ -313,9 +306,8 @@ mkdir -p /tmp/swaybar/bar-$i
 _bar $i
 swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-x.sh $i"
 echo " syslog" > /tmp/swaybar/bar-$i/full-text
-echo "#E4D00A" > /tmp/swaybar/bar-$i/full-text-color
+ln -s  /tmp/swaybar/color-theme/other/log-color /tmp/swaybar/bar-$i/full-text-color
 echo "" > /tmp/swaybar/bar-$i/icon
-echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
 echo "foot -a 'log' sudo tail -f /var/log/messages" > /tmp/swaybar/bar-$i/event-272
 
 i="swaylog"
@@ -327,9 +319,8 @@ mkdir -p /tmp/swaybar/bar-$i
 _bar $i
 swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-x.sh $i"
 echo " swaylog" > /tmp/swaybar/bar-$i/full-text
-echo "#E4D00A" > /tmp/swaybar/bar-$i/full-text-color
+ln -s  /tmp/swaybar/color-theme/other/log-color /tmp/swaybar/bar-$i/full-text-color
 echo "" > /tmp/swaybar/bar-$i/icon
-echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
 echo "foot -a 'log' tail -f /tmp/sway.log" > /tmp/swaybar/bar-$i/event-272
 
 i="openvpn"
@@ -341,9 +332,8 @@ mkdir -p /tmp/swaybar/bar-$i
 _bar $i
 swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-x.sh $i"
 echo " openvpn" > /tmp/swaybar/bar-$i/full-text
-echo "#E4D00A" > /tmp/swaybar/bar-$i/full-text-color
+ln -s  /tmp/swaybar/color-theme/other/log-color /tmp/swaybar/bar-$i/full-text-color
 echo "" > /tmp/swaybar/bar-$i/icon
-echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
 echo "foot -a 'log' sudo tail -f /tmp/openvpn-client.log" > /tmp/swaybar/bar-$i/event-272
 
 i="group-logs"
@@ -355,10 +345,7 @@ mkdir -p /tmp/swaybar/bar-$i
 _bar $i
 swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/bar-x.sh $i"
 echo "-= Logs =-" > /tmp/swaybar/bar-$i/full-text
-echo "#088F8F" > /tmp/swaybar/bar-$i/full-text-color
-#echo "" > /tmp/swaybar/bar-$i/icon
-#echo "#FFFFFF" > /tmp/swaybar/bar-$i/icon-color
-#echo "" > /tmp/swaybar/bar-$i/event-272
+ln -s  /tmp/swaybar/color-theme/other/group-color /tmp/swaybar/bar-$i/full-text-color
 
 echo "$b_list" > /tmp/swaybar/id_menu_start
 
@@ -469,6 +456,3 @@ rm -rf /tmp/swaybar/bar-$i
 mkdir -p /tmp/swaybar/bar-$i
 _bar $i
 swaymsg bar $i status_command "${HOME}/.config/sway/swaybar.d/full_time.sh 500"
-
-
-~/.config/sway/swaybar.d/bar-colors.sh "my-colors" >/dev/null 2>&1

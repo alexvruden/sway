@@ -11,6 +11,7 @@ w_tx=60
 w_rx=60
 w_s=$(( $1 - $w_t - $w_tx - $w_rx - $w_icon ))
 w_speed=$(( $w_s / 2 ))
+ssid=""
 
 echo "x" > /tmp/swaybar/bar-task-manager/${iface}_status
 
@@ -61,9 +62,7 @@ do
 	prev_tx=$curr_tx
 	
 	echo -n "{"
-	#if [ "$(cat /tmp/swaybar/bar-task-manager/${iface}_status)" != "wait" ]; then
-		echo -n "\"name\":\"id_iface\","
-	#fi
+	echo -n "\"name\":\"id_iface\","
 	echo -n "\"separator\":true,"
 	echo -n "\"separator_block_width\": 0,"
 	echo -n "\"min_width\": $w_icon,"
@@ -87,9 +86,7 @@ do
 	echo -n ","
 	
 	echo -n "{"
-	#if [ "$(cat /tmp/swaybar/bar-task-manager/${iface}_status)" != "wait" ]; then
-		echo -n "\"name\":\"id_iface\","
-	#fi
+	echo -n "\"name\":\"id_iface\","
 	echo -n "\"separator\": false,"
 	echo -n "\"separator_block_width\": 0,"
 	echo -n "\"align\": \"left\","
@@ -98,13 +95,14 @@ do
 	if [ "$iface" = "enp4s0" ]; then
 		echo -n "\"full_text\":\" [LAN]\""
 	elif [ "$iface" = "wlan0" ]; then
-		if [ -e /tmp/wpa_supplicant.log ]; then 
-			ssid="$(sudo cat /tmp/wpa_supplicant.log | grep -r -m 1 "Trying to associate with" - | cut -d\' -f2 )"
-		elif [ -e /var/log/wpa_supplicant.log ]; then 
-			ssid="$(sudo cat /var/log/wpa_supplicant.log | grep -r -m 1 'Trying to associate with' - | cut -d\' -f2 )"
-		else
-			ssid=""
+		if [ ! $ssid ]; then
+			if [ -f /tmp/wpa_supplicant.log ] && [ "$iface_inet" = "true" ]; then 
+				ssid="$(sudo cat /tmp/wpa_supplicant.log | grep -r -m 1 "Trying to associate with" - | cut -d\' -f2 )"
+			elif [ -f /var/log/wpa_supplicant.log ] && [ "$iface_inet" = "true" ]; then 
+				ssid="$(sudo cat /var/log/wpa_supplicant.log | grep -r -m 1 'Trying to associate with' - | cut -d\' -f2 )"
+			fi
 		fi
+		
 		if [ $ssid ] && [ "$iface_inet" = "true" ]; then
 			lenght_ssid=${#ssid}
 			if [ $lenght_ssid -gt 8 ]; then
@@ -137,7 +135,7 @@ do
 			if [ "$iface_inet" = "false" ]; then 
 				echo -n "\"full_text\":\" not\""
 			else
-				echo -n "\"full_text\":\" RX: [\""
+				echo -n "\"full_text\":\" RX: \""
 			fi
 		fi
 	fi
@@ -161,7 +159,7 @@ do
 				echo -n "\"full_text\":\"connected \""
 			else
 				echo -n "\"align\": \"right\","
-				echo -n "\"full_text\":\"$speed_rx KiB] \""
+				echo -n "\"full_text\":\"$speed_rx KiB \""
 			fi
 		fi
 	fi
@@ -180,7 +178,7 @@ do
 		if [ "$iface_inet" = "false" ]; then 
 			echo -n "\"full_text\":\" \""
 		else
-			echo -n "\"full_text\":\" TX: [\""
+			echo -n "\"full_text\":\" TX: \""
 		fi
 	fi
 	echo -n "}"
@@ -197,7 +195,7 @@ do
 		if [ "$iface_inet" = "false" ]; then 
 			echo -n "\"full_text\":\" \""
 		else
-			echo -n "\"full_text\":\"$speed_tx KiB] \""
+			echo -n "\"full_text\":\"$speed_tx KiB \""
 		fi
 	fi
 	echo -n "}"
@@ -223,6 +221,7 @@ do
 								;;
 		*"id_iface"*"event"*"273"*) 
 								if [ "$iface" = "tun0" ]; then
+									#for file in /etc/init.d/openvpn.*; do
 									for file in /run/openvpn.*; do
 										ff=${file##*/}
 										ff=${ff%.*}

@@ -1,11 +1,19 @@
 #!/bin/bash
 
+dbus-update-activation-environment I3SOCK SWAYSOCK DISPLAY WAYLAND_DISPLAY XDG_SESSION_DESKTOP XDG_SESSION_TYPE XDG_CURRENT_DESKTOP >/dev/null 2>&1
+/usr/libexec/xdg-desktop-portal-wlr -r -l DEBUG >/tmp/xdg-desktop-portal-wlr.log 2>&1 &
+/usr/libexec/xdg-desktop-portal -vr >/tmp/xdg-desktop-portal.log 2>&1 &
+gentoo-pipewire-launcher >/tmp/gentoo-pipewire-launcher.log 2>&1 &
+
 mkdir -p /tmp/swaybar
 rm -rf /tmp/swaybar/bar-task-manager
 mkdir -p /tmp/swaybar/bar-task-manager
 
 . ~/.config/sway/swaybar.d/icmp.sh &
 ~/.config/sway/swaybar.d/create.sh >/dev/null 2>&1
+~/.config/sway/swaybar.d/bar-colors.sh >/dev/null 2>&1
+
+# ------
 
 sc_width=$(swaymsg -p -t get_outputs | awk '/mode:/ {print $3}' | cut -dx -f1)
 
@@ -104,8 +112,8 @@ do
 		echo "${pid}" >/tmp/swaybar/bar-scratch-window-${num_scratch}/pid-file
 		event_272="sway [pid=\"${pid}\"] focus"
 		echo "$event_272" > /tmp/swaybar/bar-scratch-window-${num_scratch}/event-272
-		echo "Name: [${names}], Pid: [${pid}]" > /tmp/swaybar/bar-scratch-window-${num_scratch}/full-text
-		echo "#FFFFFF" > /tmp/swaybar/bar-scratch-window-${num_scratch}/full-text-color
+		echo "NAME: [${names}], APP_ID: [${app_id}], PID: [${pid}]" > /tmp/swaybar/bar-scratch-window-${num_scratch}/full-text
+		#echo "#FFFFFF" > /tmp/swaybar/bar-scratch-window-${num_scratch}/full-text-color
 
 	done
 	echo "$num_scratch" > /tmp/swaybar/bar-task-manager/scratch_windows
